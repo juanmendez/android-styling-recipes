@@ -8,12 +8,20 @@
     tools:context="info.juanmendez.stylingrecipes.MainActivity">
 
     <!--simple enough to change the tint color-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:text="including png's" />
     <ImageView
         android:src="@drawable/ic_signal_wifi_off_black_24dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:tint="@color/colorAccent" />
 
+    <TextView
+        android:text="Including vectors with app:srcCompat"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
     <ImageView
         android:layout_width="54dp"
         android:layout_height="54dp"
@@ -26,7 +34,11 @@
         app:srcCompat="@drawable/ic_bike_24dp"
         android:tint="@color/colorAccent"/>
 
-
+    <TextView
+        android:text="How to replace dot icons for radio-buttons"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
     <RadioGroup
         android:id="@+id/addressesLayout_group"
         android:orientation="horizontal"
@@ -52,18 +64,35 @@
             android:button="@drawable/walk_radiobtn"/>
     </RadioGroup>
 
-    <Button android:id="@+id/dynamicIconBtn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingLeft="30dp"/>
-
-    <ImageButton
-        android:id="@+id/imageButton"
+    <TextView
+        android:text="CompoundDrawable buttons, placing icon on the left"
+        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <Button
         android:drawableLeft="@drawable/ic_walk_24dp"
-        android:text="Walk"
+        android:text="Via Layout"
         android:id="@+id/leftIconButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <Button android:id="@+id/dynamicIconBtn"
+        android:text="Via Java"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="30dp"/>
+
+
+
+    <TextView
+        android:text="Loading vector as bitmap at runtime"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="100dp"
+        android:layout_height="100dp" />
 
 </LinearLayout>
