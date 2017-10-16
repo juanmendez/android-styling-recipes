@@ -10,9 +10,13 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <TextView
+            android:text="This activity proves our theme choice took effect. Specially when restarting the app"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <Button
             android:id="@+id/goToFirstBtn"
-            android:text="Main Activity"
+            android:text="Go to Main Activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>

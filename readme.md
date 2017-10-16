@@ -3,7 +3,7 @@
 
 Learning how to work with Night Day theme. This time the demo will user AndroidAnnotations.
 
-* `MyApp' and `MainActivity` are flavored with @AndroidAnnotations
+* `MyApp' and `MainActivity` are flavored with [@AndroidAnnotations](https://github.com/androidannotations/androidannotations/)
 * (We extracted our theme colors from this link)[https://www.materialpalette.com/light-green/green]
 * `colors.xml` are now flavored as `nonight`, `night` 
 *  `MyApp`, when app starts we apply the last saved theme choice or default one through `myApp.reflectNightModeTheme()`

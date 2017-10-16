@@ -47,7 +47,7 @@
 
         <Button
             android:id="@+id/goToSecondBtn"
-            android:text="Second Activity"
+            android:text="Go to Second Activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
