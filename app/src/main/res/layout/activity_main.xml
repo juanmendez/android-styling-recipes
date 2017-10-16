@@ -1,27 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="info.juanmendez.stylingrecipes.MainActivity">
+    <LinearLayout
+        android:padding="20dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:text="Tell us your Day-Night preference."
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_marginBottom="20dp" />
+        <TextView
+            android:text="Truth be told theme changes happen upon starting the activity."
+            android:textColor="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_marginBottom="20dp" android:layout_marginTop="20dp"/>
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <!--simple enough to change the tint color-->
-    <ImageView
-        android:src="@drawable/ic_signal_wifi_off_black_24dp"
+            <RadioButton
+                android:id="@+id/autoRadioButton"
+                android:text="Day Night Auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/dayOnlyRadioButton"
+                android:text="Day Only"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/nightOnlyRadioButton"
+                android:text="Night Only"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/goToSecondBtn"
+            android:text="Second Activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="@color/colorAccent" />
-
-    <ImageView
-        android:layout_width="54dp"
-        android:layout_height="54dp"
-        app:srcCompat="@drawable/ic_directions_bike_black_24dp_svg"
-        android:tint="@color/colorAccent"/>
-
-    <ImageView
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        app:srcCompat="@drawable/ic_directions_bike_black_24dp_svg"
-        android:tint="@color/colorAccent"/>
-</LinearLayout>
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:src="@drawable/map_marker_plus"
+        app:layout_anchorGravity="bottom|right|end" />
+</android.support.design.widget.CoordinatorLayout>
