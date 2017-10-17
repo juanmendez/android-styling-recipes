@@ -1,5 +1,7 @@
 package info.juanmendez.stylingrecipes;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
             //update takes place, and reloads the activity!
             getDelegate().setLocalNightMode( themePrefs.dayNightMode().get() );
+            updateWidgets();
         });
     }
 
@@ -72,5 +75,17 @@ public class MainActivity extends AppCompatActivity {
                 themePrefs.dayNightMode().put( AppCompatDelegate.MODE_NIGHT_YES );
                 break;
         }
+    }
+
+    private void updateWidgets(){
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(app);
+        ComponentName componentName = new ComponentName( app, WidgetProvider_.class);
+
+        int[] widgetIds = appWidgetManager.getAppWidgetIds(componentName);
+
+        Intent  intent = new Intent(this, WidgetProvider_.class );
+        intent.setAction( AppWidgetManager.ACTION_APPWIDGET_UPDATE );
+        intent.putExtra( AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds );
+        sendBroadcast( intent );
     }
 }
