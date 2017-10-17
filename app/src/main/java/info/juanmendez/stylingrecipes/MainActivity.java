@@ -38,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             saveThemeChoice(checkedId);
 
+            //I removed this, but it turned out the second activity wasn't updated
+            //unless I closed and opened the app again.
+            app.reflectNightModeTheme();
+
             //update takes place, and reloads the activity!
             getDelegate().setLocalNightMode( themePrefs.dayNightMode().get() );
             updateWidgets();
