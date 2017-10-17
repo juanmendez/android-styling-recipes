@@ -7,3 +7,4 @@ What's current
 * 00.base
 * 01.importingVectors
 * 02.dayNightTheme
+* 02.dayNightTheme+Widgets
