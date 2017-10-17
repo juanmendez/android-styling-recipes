@@ -35,7 +35,9 @@ public class MainActivity extends AppCompatActivity {
 
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             saveThemeChoice(checkedId);
-            reload();
+
+            //update takes place, and reloads the activity!
+            getDelegate().setLocalNightMode( themePrefs.dayNightMode().get() );
         });
     }
 
@@ -70,20 +72,5 @@ public class MainActivity extends AppCompatActivity {
                 themePrefs.dayNightMode().put( AppCompatDelegate.MODE_NIGHT_YES );
                 break;
         }
-
-        app.reflectNightModeTheme();
-    }
-
-    /**
-     * reload activity because this doesn't happen automatically.
-     * https://stackoverflow.com/questions/1397361/how-do-i-restart-an-android-activity
-     */
-    public void reload() {
-        Intent intent = getIntent();
-        overridePendingTransition(0, 0);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        finish();
-        overridePendingTransition(0, 0);
-        startActivity(intent);
     }
 }
