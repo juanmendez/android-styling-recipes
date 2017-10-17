@@ -7,4 +7,5 @@
     <color name="colorSecondaryText">#ffffff</color>
     <color name="icons">#c4baba</color>
     <color name="divider">#BDBDBD</color>
+    <color name="colorBackground">#b7b7b7</color>
 </resources>
