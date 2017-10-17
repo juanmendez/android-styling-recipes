@@ -1,4 +1,4 @@
-# Vectors and colors
+# Day Night Theme
 ---------------------
 
 Learning how to work with Night Day theme. This time the demo will user AndroidAnnotations.
