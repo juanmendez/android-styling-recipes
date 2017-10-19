@@ -1,7 +1,5 @@
 package info.juanmendez.stylingrecipes.services.api.sunset_sunrise;
 
-import java.util.Date;
-
 /**
  * Created by Juan Mendez on 10/18/2017.
  * www.juanmendez.info
@@ -10,22 +8,22 @@ import java.util.Date;
 
 public class Results
 {
-    private Date sunset;
-    private Date sunrise;
+    private String sunset;
+    private String sunrise;
 
-    public Date getSunset() {
+    public String getSunset() {
         return sunset;
     }
 
-    public void setSunset(Date sunset) {
+    public void setSunset(String sunset) {
         this.sunset = sunset;
     }
 
-    public Date getSunrise() {
+    public String getSunrise() {
         return sunrise;
     }
 
-    public void setSunrise(Date sunrise) {
+    public void setSunrise(String sunrise) {
         this.sunrise = sunrise;
     }
 

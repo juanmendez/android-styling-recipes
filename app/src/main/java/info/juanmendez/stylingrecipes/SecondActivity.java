@@ -7,8 +7,8 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 
-import info.juanmendez.stylingrecipes.services.api.sunset_sunrise.SunTimes;
-import info.juanmendez.stylingrecipes.services.api.sunset_sunrise.SunsetService;
+import info.juanmendez.stylingrecipes.services.api.sunset_sunrise.Sun;
+import info.juanmendez.stylingrecipes.services.api.sunset_sunrise.SunriseSunset;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,18 +29,24 @@ public class SecondActivity extends AppCompatActivity {
     @AfterViews
     public void afterViews() {
         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.sunrise-sunset.org").addConverterFactory(GsonConverterFactory.create()).build();
-        SunsetService service = retrofit.create( SunsetService.class );
+        SunriseSunset service = retrofit.create( SunriseSunset.class );
 
-        Call<SunTimes> call = service.getTimes(41.8500300, 41.8500300, 0 );
+        Call<Sun> call = service.getTimes(41.8500300, -87.6500500, 0 );
 
-        call.enqueue(new Callback<SunTimes>() {
+        call.enqueue(new Callback<Sun>() {
             @Override
-            public void onResponse(Call<SunTimes> call, Response<SunTimes> response) {
-                SunTimes SunTimes=response.body();
+            public void onResponse(Call<Sun> call, Response<Sun> response) {
+                Sun sun=response.body();
+
+                if( sun.getStatus().equals("OK")){
+                    Timber.i("UTC sunrinse at %s and sunset at %s", sun.getResults().getSunrise(), sun.getResults().getSunset() );
+                }else{
+                    Timber.i( "sunrise-sunset.org may be down");
+                }
             }
 
             @Override
-            public void onFailure(Call<SunTimes> call, Throwable t) {
+            public void onFailure(Call<Sun> call, Throwable t) {
                 Timber.i( "error %s", t.getMessage() 
                 );
             }

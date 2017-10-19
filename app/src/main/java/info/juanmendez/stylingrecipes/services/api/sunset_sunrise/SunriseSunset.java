@@ -10,8 +10,8 @@ import retrofit2.http.Query;
  * contact@juanmendez.info
  */
 
-public interface SunsetService {
+public interface SunriseSunset {
 
     @GET("/json")
-    Call<SunTimes> getTimes(@Query("lat") double lat, @Query("lng") double lng, @Query("formatted") int formatted );
+    Call<Sun> getTimes(@Query("lat") double lat, @Query("lng") double lng, @Query("formatted") int formatted );
 }

@@ -6,7 +6,7 @@ package info.juanmendez.stylingrecipes.services.api.sunset_sunrise;
  * contact@juanmendez.info
  */
 
-public class SunTimes
+public class Sun
 {
     private Results results;
 
@@ -34,7 +34,7 @@ public class SunTimes
 
     @Override
     public String toString() {
-        return "SunTimes{" +
+        return "Sun{" +
                 "results=" + results +
                 ", status='" + status + '\'' +
                 '}';
