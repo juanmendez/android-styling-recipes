@@ -60,7 +60,7 @@ public class WidgetProvider extends AppWidgetProvider {
              * The only way to update a widget day-night theme is done by choosing the layout
              */
             RemoteViews widget = new RemoteViews(context.getPackageName(),
-                            isDayTime()?R.layout.widget_layout :
+                            isDayTime(context)?R.layout.widget_layout :
                             R.layout.widet_layout_night);
 
             manager.updateAppWidget(widgetId, widget);
@@ -69,12 +69,12 @@ public class WidgetProvider extends AppWidgetProvider {
 
     /**
      * Tells if the app is in day or night theme. It doesn't understand night-auto. But it sure
-     * figures out what theme corresponds.
+     * figures out what theme cor,responds.
      * @see https://medium.com/@chrisbanes/appcompat-v23-2-daynight-d10f90c83e94
      * @return
      */
-    private boolean isDayTime(){
-        int currentMode = myApp.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+    private boolean isDayTime(Context context){
+        int currentMode = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         return Configuration.UI_MODE_NIGHT_NO == currentMode;
     }
 }
