@@ -1,7 +1,6 @@
 package info.juanmendez.daynightthemescheduler;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
 import org.junit.Before;
@@ -9,15 +8,17 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import info.juanmendez.daynightthemescheduler.models.LightTime;
+import info.juanmendez.daynightthemescheduler.models.Response;
+import info.juanmendez.daynightthemescheduler.services.ApiWS;
+import info.juanmendez.daynightthemescheduler.services.NetworkService;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 
 /**
@@ -27,13 +28,39 @@ import static org.mockito.Matchers.any;
  */
 public class SchedulerTest {
 
-    LocalTime sunrise = getLocalTime("2017-10-18T12:07:26+00:00");
-    LocalTime sunset = getLocalTime( "2017-10-18T23:03:42+00:00" );
+    LocalTime sunrise;
+    LocalTime sunset;
+    ApiWS apiProxy;
+    LightTime lightTime;
+
+    boolean isOnline = true;
+    NetworkService networkService;
 
     @Before
     public void before(){
-        sunrise = getLocalTime("2017-10-18T12:07:26+00:00");
-        sunset = getLocalTime( "2017-10-18T23:03:42+00:00" );
+        lightTime = new LightTime("2017-10-18T12:07:26+00:00", "2017-10-18T23:03:42+00:00");
+
+        sunrise = LocalTimeUtils.getLocalTime( lightTime.getSunRise());
+        sunset = LocalTimeUtils.getLocalTime( lightTime.getSunSet() );
+
+        generateProxy();
+        generateNetworkService();
+    }
+
+    private void generateNetworkService() {
+        networkService = mock( NetworkService.class );
+        doReturn( isOnline ).when( networkService ).isOnline();
+    }
+
+    private void generateProxy() {
+        //chicago.. https://api.sunrise-sunset.org/json?lat=41.8500300&lng=-87.6500500&formatted=0
+        apiProxy = mock( ApiWS.class );
+
+        PowerMockito.doAnswer(invocation -> {
+            Response<LightTime> response = invocation.getArgumentAt(0, Response.class);
+            response.onResult( lightTime );
+            return null;
+        }).when( apiProxy ).provideTodaysSchedule(any(Response.class));
     }
 
     /**Spike Joda time **/
@@ -62,27 +89,27 @@ public class SchedulerTest {
 
         //5:00
         LocalTime now = new LocalTime(5, 0, 0 );
-        assertFalse( isDaylightScreen(now, sunrise, sunset ));
+        assertFalse( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
 
         //8:00
         now = now.plusHours( 3 );
-        assertTrue( isDaylightScreen(now, sunrise, sunset ));
+        assertTrue( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
 
         //16:00
         now = now.plusHours( 8 );
-        assertTrue( isDaylightScreen(now, sunrise, sunset ));
+        assertTrue( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
 
         //18:00
         now = now.plusHours( 2 );
-        assertTrue( isDaylightScreen(now, sunrise, sunset ));
+        assertTrue( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
 
         //18:03
         now = now.plusMinutes(3);
-        assertTrue( isDaylightScreen(now, sunrise, sunset ));
+        assertTrue( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
 
         //18:03:43 pm, we are passed by one second!
         now = now.plusSeconds( 43);
-        assertFalse( isDaylightScreen(now, sunrise, sunset ));
+        assertFalse( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
 
         //how do we do a substraction? Example, how much time is needed to get to 19:00 hours?
         LocalTime nineteen = new LocalTime( 19, 0, 0 );
@@ -124,39 +151,35 @@ public class SchedulerTest {
     @Test
     public void testOptionMade(){
 
-        //chicago.. https://api.sunrise-sunset.org/json?lat=41.8500300&lng=-87.6500500&formatted=0
-
-        ApiProxy apiProxy = Mockito.mock( ApiProxy.class );
-
-        PowerMockito.doAnswer( invocation -> {
-            QuickResponse<List<Date>> response = invocation.getArgumentAt(0, QuickResponse.class);
-
-            List<Date> scheduler = new ArrayList<>();
-            scheduler.add( new Date());
-            scheduler.add( new Date());
-            response.onResult( scheduler );
-
-            return null;
-        }).when( apiProxy ).provideTodaysSchedule(any(QuickResponse.class));
-
-        QuickResponse<List<Date>> respose = Mockito.mock(QuickResponse.class);
+        Response<LightTime> respose = mock(Response.class);
         apiProxy.provideTodaysSchedule(respose);
-        Mockito.verify(  respose ).onResult(any(List.class));
+        Mockito.verify(  respose ).onResult(any(LightTime.class));
     }
 
-    private LocalTime getLocalTime(String dateString ){
-        DateTime dt = new DateTime(dateString, DateTimeZone.UTC);
-        dt = new DateTime( dt, DateTimeZone.forID((TimeZone.getDefault()).getID()));
-        return dt.toLocalTime();
+    /**
+     * check if the appLightTime is from today.
+     */
+    @Test
+    public void checkIfLightTimeIsToday(){
+
+        LocalDateTime sunriseDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunRise() );
+        LocalDateTime sunsetDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunSet() );
+        LocalDateTime now = LocalDateTime.now();
+
+        //appLightTime happened not today
+        assertFalse( sunriseDateTime.toLocalDate().equals( now.toLocalDate() ) );
+
+        //lets pretend now is on Oct 18
+        now = LocalTimeUtils.getLocalDateTime( "2017-10-18T16:00:00+00:00" );
+
+        assertTrue( sunriseDateTime.toLocalDate().equals( now.toLocalDate() ) );
+        assertTrue( sunriseDateTime.isBefore(now) && sunsetDateTime.isAfter(now ));
     }
 
-    private Boolean isDaylightScreen(LocalTime now, LocalTime sunrise, LocalTime sunset){
-        if( now.isBefore( sunrise )){
-            return false;
-        }else if( now.isBefore(sunset)){
-            return true;
-        }
-
-        return false;
+    @Test
+    public void testChangingAnotherDateTimeForTodays(){
+        LocalDateTime sunriseDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunRise() );
+        LocalDateTime sunriseToday =  sunriseDateTime.toLocalTime().toDateTimeToday().toLocalDateTime();
+        assertTrue( sunriseToday.toLocalDate().equals( sunriseToday.toLocalDate() ));
     }
 }

@@ -1,4 +1,4 @@
-package info.juanmendez.daynightthemescheduler;
+package info.juanmendez.daynightthemescheduler.models;
 
 /**
  * Created by Juan Mendez on 10/17/2017.
@@ -6,6 +6,6 @@ package info.juanmendez.daynightthemescheduler;
  * contact@juanmendez.info
  */
 
-public interface QuickResponse<T> {
+public interface Response<T> {
     void onResult(T result );
 }
