@@ -2,9 +2,10 @@ package info.juanmendez.daynightthemescheduler.services;
 
 import org.joda.time.LocalTime;
 
-import info.juanmendez.daynightthemescheduler.utils.LocalTimeUtils;
 import info.juanmendez.daynightthemescheduler.models.LightTime;
 import info.juanmendez.daynightthemescheduler.models.Response;
+import info.juanmendez.daynightthemescheduler.utils.LightTimeUtils;
+import info.juanmendez.daynightthemescheduler.utils.LocalTimeUtils;
 
 /**
  * Created by Juan Mendez on 10/27/2017.
@@ -14,21 +15,20 @@ import info.juanmendez.daynightthemescheduler.models.Response;
  */
 public class LightTimePlanner {
 
+    public static final int NO_SCHEDULE = 0;
     public static final int SUNRISE_SCHEDULE = 1;
     public static final int SUNSET_SCHEDULE = 2;
     public static final int TOMORROW_SCHEDULE = 3;
 
-    private ApiRetro apiProxy;
-    private NetworkService networkService;
+    private ApiProxy apiProxy;
     private LocalTime now  = LocalTime.now();
 
     /**
-     * @param apiProxy makes calls to get
+     * @param ApiRetro makes calls to get
      * @param lightTime
      */
-    public LightTimePlanner(ApiRetro apiProxy, NetworkService networkService, LightTime lightTime ) {
-        this.apiProxy = apiProxy;
-        this.networkService = networkService;
+    public LightTimePlanner(ApiRetro apiRetro, NetworkService networkService, LightTime lightTime ) {
+        this.apiProxy = new ApiProxy( networkService, apiRetro, lightTime );
     }
 
     public void provideNextSchedule(Response<LightTime> response){
@@ -36,33 +36,34 @@ public class LightTimePlanner {
     }
 
     private void provideTodaySchedule( Response<LightTime> response ){
-        apiProxy.provideTodaysSchedule(result -> {
+        apiProxy.provideTodaysSchedule(lightTimeResult -> {
 
-            LightTime lightTime = new LightTime( result.getSunRise(), result.getSunSet() );
+            if(LightTimeUtils.isValid( lightTimeResult )){
+                LocalTime sunrise = LocalTimeUtils.getLocalTime( lightTimeResult.getSunRise() );
+                LocalTime sunset = LocalTimeUtils.getLocalTime( lightTimeResult.getSunSet() );
 
-            LocalTime sunrise = LocalTimeUtils.getLocalTime( lightTime.getSunRise() );
-            LocalTime sunset = LocalTimeUtils.getLocalTime( lightTime.getSunSet() );
+                int when = whatSchedule( now, sunrise, sunset );
 
-            int when = whatSchedule( now, sunrise, sunset );
-
-            if( when == SUNRISE_SCHEDULE ){
-                lightTime.setNextSchedule( result.getSunRise() );
-                response.onResult( lightTime );
-            }else if(  when == SUNSET_SCHEDULE ){
-                lightTime.setNextSchedule( result.getSunSet() );
-                response.onResult( lightTime );
-            }else if( when == TOMORROW_SCHEDULE ){
-                //ok, we need to call and get tomorrows..
-                provideTomorrowSchedule( response );
+                if( when == SUNRISE_SCHEDULE ){
+                    lightTimeResult.setNextSchedule( lightTimeResult.getSunRise() );
+                    response.onResult( lightTimeResult );
+                }else if(  when == SUNSET_SCHEDULE ){
+                    lightTimeResult.setNextSchedule( lightTimeResult.getSunSet() );
+                    response.onResult( lightTimeResult );
+                }else if( when == TOMORROW_SCHEDULE ){
+                    //ok, we need to call and get tomorrows..
+                    provideTomorrowSchedule( response );
+                }
+            }else{
+                response.onResult( lightTimeResult );
             }
         });
     }
 
     private void provideTomorrowSchedule( Response<LightTime> response ){
-        apiProxy.provideTomorrowSchedule(result -> {
-            LightTime lightTime = new LightTime( result.getSunRise(), result.getSunSet() );
-            lightTime.setNextSchedule( result.getSunRise() );
-            response.onResult( lightTime );
+        apiProxy.provideTomorrowSchedule(lightTimeResult -> {
+            lightTimeResult.setNextSchedule( lightTimeResult.getSunRise() );
+            response.onResult( lightTimeResult );
         });
     }
 

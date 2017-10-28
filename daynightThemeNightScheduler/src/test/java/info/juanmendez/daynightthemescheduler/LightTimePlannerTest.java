@@ -59,7 +59,7 @@ public class LightTimePlannerTest {
         generateProxy();
         generateNetworkService();
 
-        planner = new LightTimePlanner(apiRetro, networkService, appLightTime );
+        planner = new LightTimePlanner( apiRetro, networkService, appLightTime );
     }
 
     private void generateNetworkService() {
