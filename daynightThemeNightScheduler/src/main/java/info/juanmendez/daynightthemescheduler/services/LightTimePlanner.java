@@ -27,7 +27,7 @@ public class LightTimePlanner {
      * @param ApiRetro makes calls to get
      * @param lightTime
      */
-    public LightTimePlanner(ApiRetro apiRetro, NetworkService networkService, LightTime lightTime ) {
+    public LightTimePlanner(LightTimeRetro apiRetro, NetworkService networkService, LightTime lightTime ) {
         this.apiProxy = new ApiProxy( networkService, apiRetro, lightTime );
     }
 

@@ -8,12 +8,9 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 
+import info.juanmendez.stylingrecipes.services.DroidLightTimeRetro;
 import info.juanmendez.stylingrecipes.services.DroidNetworkService;
-import info.juanmendez.stylingrecipes.services.api.sunrise.LightTimeResponse;
 import info.juanmendez.stylingrecipes.services.api.sunrise.LightTimeCalls;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
@@ -36,25 +33,10 @@ public class SecondActivity extends AppCompatActivity {
         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.sunrise-sunset.org").addConverterFactory(GsonConverterFactory.create()).build();
         LightTimeCalls service = retrofit.create( LightTimeCalls.class );
 
-        Call<LightTimeResponse> call = service.getLightTime(41.8500300, -87.6500500, 0 );
+        DroidLightTimeRetro lightTimeRetro = new DroidLightTimeRetro(retrofit, service );
 
-        call.enqueue(new Callback<LightTimeResponse>() {
-            @Override
-            public void onResponse(Call<LightTimeResponse> call, Response<LightTimeResponse> response) {
-                LightTimeResponse sun=response.body();
-
-                if( sun.getStatus().equals("OK")){
-                    Timber.i("UTC sunrinse at %s and sunset at %s", sun.getResults().getSunrise(), sun.getResults().getSunset() );
-                }else{
-                    Timber.i( "sunrise-sunset.org may be down");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<LightTimeResponse> call, Throwable t) {
-                Timber.i( "error %s", t.getMessage() 
-                );
-            }
+        lightTimeRetro.generateTodayTimeLight(result -> {
+            Timber.i( "LightTime result %s", result );
         });
 
         Timber.i( "Is there connection %s", networkService.isOnline()?"yes":"false");

@@ -13,12 +13,12 @@ import info.juanmendez.daynightthemescheduler.models.Response;
  * contact@juanmendez.info
  */
 
-public class ApiProxy implements ApiRetro {
+public class ApiProxy implements LightTimeRetro {
     NetworkService networkService;
     LightTime appLightTime;
-    ApiRetro webService;
+    LightTimeRetro webService;
 
-    public ApiProxy(NetworkService networkService, ApiRetro webService, LightTime appLightTime) {
+    public ApiProxy(NetworkService networkService, LightTimeRetro webService, LightTime appLightTime) {
         this.networkService = networkService;
         this.webService = webService;
         this.appLightTime = appLightTime;

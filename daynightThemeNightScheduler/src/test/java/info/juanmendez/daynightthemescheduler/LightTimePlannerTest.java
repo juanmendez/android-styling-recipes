@@ -12,7 +12,7 @@ import org.powermock.reflect.Whitebox;
 import info.juanmendez.daynightthemescheduler.models.LightTime;
 import info.juanmendez.daynightthemescheduler.models.Response;
 import info.juanmendez.daynightthemescheduler.services.ApiProxy;
-import info.juanmendez.daynightthemescheduler.services.ApiRetro;
+import info.juanmendez.daynightthemescheduler.services.LightTimeRetro;
 import info.juanmendez.daynightthemescheduler.services.LightTimePlanner;
 import info.juanmendez.daynightthemescheduler.services.NetworkService;
 import info.juanmendez.daynightthemescheduler.utils.LightTimeUtils;
@@ -38,7 +38,7 @@ public class LightTimePlannerTest {
 
     LocalTime sunrise;
     LocalTime sunset;
-    ApiRetro apiRetro;
+    LightTimeRetro apiRetro;
     LightTime appLightTime;
     LightTime proxyTodayLightTime;
     LightTime proxyTomorrowLightTime;
@@ -70,7 +70,7 @@ public class LightTimePlannerTest {
 
     private void generateProxy() {
         //chicago.. https://api.sunrise-sunset.org/json?lat=41.8500300&lng=-87.6500500&formatted=0
-        apiRetro = mock( ApiRetro.class );
+        apiRetro = mock( LightTimeRetro.class );
 
         PowerMockito.doAnswer(invocation -> {
             Response<LightTime> response = invocation.getArgumentAt(0, Response.class);
