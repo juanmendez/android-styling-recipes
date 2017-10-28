@@ -1,5 +1,9 @@
 package info.juanmendez.daynightthemescheduler.services;
 
+import org.joda.time.DateTime;
+
+import info.juanmendez.daynightthemescheduler.utils.LightTimeUtils;
+import info.juanmendez.daynightthemescheduler.utils.LocalTimeUtils;
 import info.juanmendez.daynightthemescheduler.models.LightTime;
 import info.juanmendez.daynightthemescheduler.models.Response;
 
@@ -9,32 +13,39 @@ import info.juanmendez.daynightthemescheduler.models.Response;
  * contact@juanmendez.info
  */
 
-public class ApiProxy implements ApiWS{
+public class ApiProxy implements ApiRetro {
     NetworkService networkService;
     LightTime appLighttime;
-    ApiWS webService;
+    ApiRetro webService;
 
-    public ApiProxy(NetworkService networkService, ApiWS webService, LightTime appLighttime) {
+    public ApiProxy(NetworkService networkService, ApiRetro webService, LightTime appLighttime) {
         this.networkService = networkService;
         this.webService = webService;
         this.appLighttime = appLighttime;
     }
-    
-    @Override
-    public void provideTodaysSchedule(Response<LightTime> respose) {
-        if( networkService.isOnline() ){
-            webService.provideTodaysSchedule( respose );
-        }else{
 
+    @Override
+    public void provideTodaysSchedule(Response<LightTime> response) {
+        //we check if what we have is already cached
+        if(LocalTimeUtils.isSameDay( appLighttime.getSunRise(), DateTime.now().toString() )){
+            response.onResult( LightTimeUtils.clone( appLighttime ) );
+        }else if( networkService.isOnline() ){
+             webService.provideTodaysSchedule( response );
+        }else if( LightTimeUtils.isValid( appLighttime )){
+            response.onResult( LightTimeUtils.cloneForAnotherDay( appLighttime, 0 ) );
+        }else{
+            response.onResult( new LightTime() );
         }
     }
 
     @Override
     public void provideTomorrowSchedule(Response<LightTime> response) {
         if( networkService.isOnline() ){
-            webService.provideTodaysSchedule( response );
+            webService.provideTomorrowSchedule( response );
+        }else if( LightTimeUtils.isValid( appLighttime )){
+            response.onResult( LightTimeUtils.cloneForAnotherDay( appLighttime, 1 ) );
         }else{
-
+            response.onResult( new LightTime() );
         }
     }
 }

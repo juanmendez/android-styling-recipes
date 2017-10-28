@@ -2,7 +2,7 @@ package info.juanmendez.daynightthemescheduler.services;
 
 import org.joda.time.LocalTime;
 
-import info.juanmendez.daynightthemescheduler.LocalTimeUtils;
+import info.juanmendez.daynightthemescheduler.utils.LocalTimeUtils;
 import info.juanmendez.daynightthemescheduler.models.LightTime;
 import info.juanmendez.daynightthemescheduler.models.Response;
 
@@ -18,7 +18,7 @@ public class LightTimePlanner {
     public static final int SUNSET_SCHEDULE = 2;
     public static final int TOMORROW_SCHEDULE = 3;
 
-    private ApiWS apiProxy;
+    private ApiRetro apiProxy;
     private NetworkService networkService;
     private LocalTime now  = LocalTime.now();
 
@@ -26,7 +26,7 @@ public class LightTimePlanner {
      * @param apiProxy makes calls to get
      * @param lightTime
      */
-    public LightTimePlanner(ApiWS apiProxy, NetworkService networkService, LightTime lightTime ) {
+    public LightTimePlanner(ApiRetro apiProxy, NetworkService networkService, LightTime lightTime ) {
         this.apiProxy = apiProxy;
         this.networkService = networkService;
     }
