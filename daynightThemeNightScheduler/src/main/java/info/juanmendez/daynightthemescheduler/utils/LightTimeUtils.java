@@ -10,19 +10,19 @@ import info.juanmendez.daynightthemescheduler.models.LightTime;
 
 public class LightTimeUtils {
     public static LightTime clone(LightTime that ){
-        LightTime clone = new LightTime( that.getSunRise(), that.getSunSet() );
+        LightTime clone = new LightTime( that.getSunrise(), that.getSunset() );
         clone.setNextSchedule( that.getNextSchedule() );
         return clone;
     }
 
     public static LightTime cloneForAnotherDay(LightTime appLighttime, int daysFromToday) {
         LightTime clone = new LightTime();
-        clone.setSunRise( LocalTimeUtils.getDayAsString( appLighttime.getSunRise(), daysFromToday ));
-        clone.setSunSet( LocalTimeUtils.getDayAsString( appLighttime.getSunSet(), daysFromToday ));
+        clone.setSunrise( LocalTimeUtils.getDayAsString( appLighttime.getSunrise(), daysFromToday ));
+        clone.setSunset( LocalTimeUtils.getDayAsString( appLighttime.getSunset(), daysFromToday ));
         return clone;
     }
 
     public static boolean isValid( LightTime that ){
-        return !that.getSunRise().isEmpty() && !that.getSunSet().isEmpty();
+        return !that.getSunrise().isEmpty() && !that.getSunset().isEmpty();
     }
 }

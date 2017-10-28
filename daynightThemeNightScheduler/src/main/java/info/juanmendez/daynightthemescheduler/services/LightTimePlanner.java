@@ -36,19 +36,19 @@ public class LightTimePlanner {
     }
 
     private void provideTodayLightTime(Response<LightTime> response ){
-        apiProxy.provideTodaysSchedule(lightTimeResult -> {
+        apiProxy.generateTodayTimeLight(lightTimeResult -> {
 
             if(LightTimeUtils.isValid( lightTimeResult )){
-                LocalTime sunrise = LocalTimeUtils.getLocalTime( lightTimeResult.getSunRise() );
-                LocalTime sunset = LocalTimeUtils.getLocalTime( lightTimeResult.getSunSet() );
+                LocalTime sunrise = LocalTimeUtils.getLocalTime( lightTimeResult.getSunrise() );
+                LocalTime sunset = LocalTimeUtils.getLocalTime( lightTimeResult.getSunset() );
 
                 int when = whatSchedule( now, sunrise, sunset );
 
                 if( when == SUNRISE_SCHEDULE ){
-                    lightTimeResult.setNextSchedule( lightTimeResult.getSunRise() );
+                    lightTimeResult.setNextSchedule( lightTimeResult.getSunrise() );
                     response.onResult( lightTimeResult );
                 }else if(  when == SUNSET_SCHEDULE ){
-                    lightTimeResult.setNextSchedule( lightTimeResult.getSunSet() );
+                    lightTimeResult.setNextSchedule( lightTimeResult.getSunset() );
                     response.onResult( lightTimeResult );
                 }else if( when == TOMORROW_SCHEDULE ){
                     //ok, we need to call and get tomorrows..
@@ -61,8 +61,8 @@ public class LightTimePlanner {
     }
 
     private void provideTomorrowLightTime(Response<LightTime> response ){
-        apiProxy.provideTomorrowSchedule(lightTimeResult -> {
-            lightTimeResult.setNextSchedule( lightTimeResult.getSunRise() );
+        apiProxy.generateTomorrowTimeLight(lightTimeResult -> {
+            lightTimeResult.setNextSchedule( lightTimeResult.getSunrise() );
             response.onResult( lightTimeResult );
         });
     }

@@ -9,32 +9,32 @@ import android.support.annotation.NonNull;
  */
 
 public class LightTime {
-    private String sunRise = "";
-    private String sunSet = "";
+    private String sunrise = "";
+    private String sunset = "";
     private String nextSchedule = "";
 
-    public LightTime(@NonNull String sunRise, @NonNull String sunSet) {
-        this.sunRise = sunRise;
-        this.sunSet = sunSet;
+    public LightTime(@NonNull String sunrise, @NonNull String sunset) {
+        this.sunrise = sunrise;
+        this.sunset = sunset;
     }
 
     public LightTime() {
     }
 
-    public String getSunRise() {
-        return sunRise;
+    public String getSunrise() {
+        return sunrise;
     }
 
-    public void setSunRise(String sunRise) {
-        this.sunRise = sunRise;
+    public void setSunrise(String sunrise) {
+        this.sunrise = sunrise;
     }
 
-    public String getSunSet() {
-        return sunSet;
+    public String getSunset() {
+        return sunset;
     }
 
-    public void setSunSet(String sunSet) {
-        this.sunSet = sunSet;
+    public void setSunset(String sunset) {
+        this.sunset = sunset;
     }
 
     public String getNextSchedule() {

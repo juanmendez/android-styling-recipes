@@ -32,12 +32,12 @@ public class ApiProxy implements ApiRetro {
      * @param response
      */
     @Override
-    public void provideTodaysSchedule(Response<LightTime> response) {
+    public void generateTodayTimeLight(Response<LightTime> response) {
         //we check if what we have is already cached
-        if(LocalTimeUtils.isSameDay( appLightTime.getSunRise(), DateTime.now().toString() )){
+        if(LocalTimeUtils.isSameDay( appLightTime.getSunrise(), DateTime.now().toString() )){
             response.onResult( LightTimeUtils.clone(appLightTime) );
         }else if( networkService.isOnline() ){
-             webService.provideTodaysSchedule( response );
+             webService.generateTodayTimeLight( response );
         }else if( LightTimeUtils.isValid(appLightTime)){
             response.onResult( LightTimeUtils.cloneForAnotherDay(appLightTime, 0 ) );
         }else{
@@ -52,9 +52,9 @@ public class ApiProxy implements ApiRetro {
      * @param response
      */
     @Override
-    public void provideTomorrowSchedule(Response<LightTime> response) {
+    public void generateTomorrowTimeLight(Response<LightTime> response) {
         if( networkService.isOnline() ){
-            webService.provideTomorrowSchedule( response );
+            webService.generateTomorrowTimeLight( response );
         }else if( LightTimeUtils.isValid(appLightTime)){
             response.onResult( LightTimeUtils.cloneForAnotherDay(appLightTime, 1 ) );
         }else{

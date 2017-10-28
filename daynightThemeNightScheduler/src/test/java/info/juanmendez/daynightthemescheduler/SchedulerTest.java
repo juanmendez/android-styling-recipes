@@ -41,8 +41,8 @@ public class SchedulerTest {
     public void before(){
         lightTime = new LightTime("2017-10-18T12:07:26+00:00", "2017-10-18T23:03:42+00:00");
 
-        sunrise = LocalTimeUtils.getLocalTime( lightTime.getSunRise());
-        sunset = LocalTimeUtils.getLocalTime( lightTime.getSunSet() );
+        sunrise = LocalTimeUtils.getLocalTime( lightTime.getSunrise());
+        sunset = LocalTimeUtils.getLocalTime( lightTime.getSunset() );
 
         generateProxy();
         generateNetworkService();
@@ -61,7 +61,7 @@ public class SchedulerTest {
             Response<LightTime> response = invocation.getArgumentAt(0, Response.class);
             response.onResult( lightTime );
             return null;
-        }).when( apiProxy ).provideTodaysSchedule(any(Response.class));
+        }).when( apiProxy ).generateTodayTimeLight(any(Response.class));
     }
 
     /**Spike Joda time **/
@@ -153,7 +153,7 @@ public class SchedulerTest {
     public void testOptionMade(){
 
         Response<LightTime> respose = mock(Response.class);
-        apiProxy.provideTodaysSchedule(respose);
+        apiProxy.generateTodayTimeLight(respose);
         Mockito.verify(  respose ).onResult(any(LightTime.class));
     }
 
@@ -163,8 +163,8 @@ public class SchedulerTest {
     @Test
     public void checkIfLightTimeIsToday(){
 
-        LocalDateTime sunriseDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunRise() );
-        LocalDateTime sunsetDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunSet() );
+        LocalDateTime sunriseDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunrise() );
+        LocalDateTime sunsetDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunset() );
         LocalDateTime now = LocalDateTime.now();
 
         //appLightTime happened not today
@@ -179,7 +179,7 @@ public class SchedulerTest {
 
     @Test
     public void testChangingAnotherDateTimeForTodays(){
-        LocalDateTime sunriseDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunRise() );
+        LocalDateTime sunriseDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunrise() );
         LocalDateTime sunriseToday =  sunriseDateTime.toLocalTime().toDateTimeToday().toLocalDateTime();
         assertTrue( sunriseToday.toLocalDate().equals( sunriseToday.toLocalDate() ));
     }

@@ -10,6 +10,6 @@ import info.juanmendez.daynightthemescheduler.models.Response;
  */
 
 public interface ApiRetro {
-    void provideTodaysSchedule(Response<LightTime> respose);
-    void provideTomorrowSchedule(Response<LightTime> response );
+    void generateTodayTimeLight(Response<LightTime> respose);
+    void generateTomorrowTimeLight(Response<LightTime> response );
 }
