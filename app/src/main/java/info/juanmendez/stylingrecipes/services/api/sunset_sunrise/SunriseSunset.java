@@ -13,5 +13,5 @@ import retrofit2.http.Query;
 public interface SunriseSunset {
 
     @GET("/json")
-    Call<Sun> getTimes(@Query("lat") double lat, @Query("lng") double lng, @Query("formatted") int formatted );
+    Call<Sun> getLightTimes(@Query("lat") double lat, @Query("lng") double lng, @Query("formatted") int formatted );
 }

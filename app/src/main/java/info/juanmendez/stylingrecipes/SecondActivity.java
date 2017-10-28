@@ -31,7 +31,7 @@ public class SecondActivity extends AppCompatActivity {
         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.sunrise-sunset.org").addConverterFactory(GsonConverterFactory.create()).build();
         SunriseSunset service = retrofit.create( SunriseSunset.class );
 
-        Call<Sun> call = service.getTimes(41.8500300, -87.6500500, 0 );
+        Call<Sun> call = service.getLightTimes(41.8500300, -87.6500500, 0 );
 
         call.enqueue(new Callback<Sun>() {
             @Override

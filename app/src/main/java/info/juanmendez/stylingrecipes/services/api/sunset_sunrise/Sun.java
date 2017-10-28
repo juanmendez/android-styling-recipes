@@ -1,5 +1,7 @@
 package info.juanmendez.stylingrecipes.services.api.sunset_sunrise;
 
+import info.juanmendez.daynightthemescheduler.models.LightTime;
+
 /**
  * Created by Juan Mendez on 10/18/2017.
  * www.juanmendez.info
@@ -8,16 +10,16 @@ package info.juanmendez.stylingrecipes.services.api.sunset_sunrise;
 
 public class Sun
 {
-    private Results results;
+    private LightTime results;
 
     private String status;
 
-    public Results getResults ()
+    public LightTime getResults ()
     {
         return results;
     }
 
-    public void setResults (Results results)
+    public void setResults (LightTime results)
     {
         this.results = results;
     }
