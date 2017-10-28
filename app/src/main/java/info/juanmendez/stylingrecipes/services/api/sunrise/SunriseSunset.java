@@ -1,4 +1,4 @@
-package info.juanmendez.stylingrecipes.services.api.sunset_sunrise;
+package info.juanmendez.stylingrecipes.services.api.sunrise;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

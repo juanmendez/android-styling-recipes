@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 
-import info.juanmendez.stylingrecipes.services.api.sunset_sunrise.Sun;
-import info.juanmendez.stylingrecipes.services.api.sunset_sunrise.SunriseSunset;
+import info.juanmendez.stylingrecipes.services.DroidNetworkService;
+import info.juanmendez.stylingrecipes.services.api.sunrise.Sun;
+import info.juanmendez.stylingrecipes.services.api.sunrise.SunriseSunset;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,6 +27,9 @@ import timber.log.Timber;
 
 @EActivity(R.layout.activity_second)
 public class SecondActivity extends AppCompatActivity {
+
+    @Bean
+    DroidNetworkService networkService;
 
     @AfterViews
     public void afterViews() {
@@ -51,6 +56,8 @@ public class SecondActivity extends AppCompatActivity {
                 );
             }
         });
+
+        Timber.i( "Is there connection %s", networkService.isOnline()?"yes":"false");
     }
 
     @Click
