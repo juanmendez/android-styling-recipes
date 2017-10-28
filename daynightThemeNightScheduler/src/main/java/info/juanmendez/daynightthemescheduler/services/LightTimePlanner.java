@@ -31,11 +31,11 @@ public class LightTimePlanner {
         this.apiProxy = new ApiProxy( networkService, apiRetro, lightTime );
     }
 
-    public void provideNextSchedule(Response<LightTime> response){
-        provideTodaySchedule(  response );
+    public void provideNextTimeLight(Response<LightTime> response){
+        provideTodayLightTime(  response );
     }
 
-    private void provideTodaySchedule( Response<LightTime> response ){
+    private void provideTodayLightTime(Response<LightTime> response ){
         apiProxy.provideTodaysSchedule(lightTimeResult -> {
 
             if(LightTimeUtils.isValid( lightTimeResult )){
@@ -52,7 +52,7 @@ public class LightTimePlanner {
                     response.onResult( lightTimeResult );
                 }else if( when == TOMORROW_SCHEDULE ){
                     //ok, we need to call and get tomorrows..
-                    provideTomorrowSchedule( response );
+                    provideTomorrowLightTime( response );
                 }
             }else{
                 response.onResult( lightTimeResult );
@@ -60,7 +60,7 @@ public class LightTimePlanner {
         });
     }
 
-    private void provideTomorrowSchedule( Response<LightTime> response ){
+    private void provideTomorrowLightTime(Response<LightTime> response ){
         apiProxy.provideTomorrowSchedule(lightTimeResult -> {
             lightTimeResult.setNextSchedule( lightTimeResult.getSunRise() );
             response.onResult( lightTimeResult );

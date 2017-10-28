@@ -130,17 +130,17 @@ public class LightTimePlannerTest {
         proxyTomorrowLightTime.setSunSet( "2017-10-28T23:03:42+00:00" );
 
         Whitebox.setInternalState( planner, "now", LocalTime.parse( "00:40:00") );
-        planner.provideNextSchedule( result -> {
+        planner.provideNextTimeLight(result -> {
             assertEquals(proxyTodayLightTime.getSunRise(), result.getNextSchedule());
         });
 
         Whitebox.setInternalState( planner, "now", LocalTime.parse( "16:40:00") );
-        planner.provideNextSchedule( result -> {
+        planner.provideNextTimeLight(result -> {
             assertEquals(proxyTodayLightTime.getSunSet(), result.getNextSchedule());
         });
 
         Whitebox.setInternalState( planner, "now", LocalTime.parse( "23:00:00") );
-        planner.provideNextSchedule( result -> {
+        planner.provideNextTimeLight(result -> {
             assertEquals( result.getSunRise(), proxyTomorrowLightTime.getSunRise() );
             assertEquals( result.getSunSet(), proxyTomorrowLightTime.getSunSet() );
             assertEquals( result.getNextSchedule(), proxyTomorrowLightTime.getSunRise() );
@@ -270,5 +270,21 @@ public class LightTimePlannerTest {
 
         //knowing that our response has an invalid lightTime means
         //we can use this flag to make a special case.
+    }
+
+    @Test
+    public void testPlannerWithNetworkIssues(){
+        isOnline = false;
+        appLightTime.setSunRise("");
+        appLightTime.setSunSet("");
+
+        final LightTime[] proxyResult = new LightTime[1];
+
+        Response<LightTime> response = result -> {
+            proxyResult[0] = result;
+        };
+
+        planner.provideNextTimeLight( response );
+        assertFalse(LightTimeUtils.isValid( proxyResult[0]));
     }
 }
