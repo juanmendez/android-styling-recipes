@@ -9,9 +9,8 @@ import retrofit2.http.Query;
  * www.juanmendez.info
  * contact@juanmendez.info
  */
-
-public interface SunriseSunset {
+public interface LightTimeCalls {
 
     @GET("/json")
-    Call<Sun> getLightTimes(@Query("lat") double lat, @Query("lng") double lng, @Query("formatted") int formatted );
+    Call<LightTimeResponse> getLightTime(@Query("lat") double lat, @Query("lng") double lng, @Query("formatted") int formatted );
 }

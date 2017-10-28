@@ -9,8 +9,8 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 
 import info.juanmendez.stylingrecipes.services.DroidNetworkService;
-import info.juanmendez.stylingrecipes.services.api.sunrise.Sun;
-import info.juanmendez.stylingrecipes.services.api.sunrise.SunriseSunset;
+import info.juanmendez.stylingrecipes.services.api.sunrise.LightTimeResponse;
+import info.juanmendez.stylingrecipes.services.api.sunrise.LightTimeCalls;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -34,14 +34,14 @@ public class SecondActivity extends AppCompatActivity {
     @AfterViews
     public void afterViews() {
         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.sunrise-sunset.org").addConverterFactory(GsonConverterFactory.create()).build();
-        SunriseSunset service = retrofit.create( SunriseSunset.class );
+        LightTimeCalls service = retrofit.create( LightTimeCalls.class );
 
-        Call<Sun> call = service.getLightTimes(41.8500300, -87.6500500, 0 );
+        Call<LightTimeResponse> call = service.getLightTime(41.8500300, -87.6500500, 0 );
 
-        call.enqueue(new Callback<Sun>() {
+        call.enqueue(new Callback<LightTimeResponse>() {
             @Override
-            public void onResponse(Call<Sun> call, Response<Sun> response) {
-                Sun sun=response.body();
+            public void onResponse(Call<LightTimeResponse> call, Response<LightTimeResponse> response) {
+                LightTimeResponse sun=response.body();
 
                 if( sun.getStatus().equals("OK")){
                     Timber.i("UTC sunrinse at %s and sunset at %s", sun.getResults().getSunrise(), sun.getResults().getSunset() );
@@ -51,7 +51,7 @@ public class SecondActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<Sun> call, Throwable t) {
+            public void onFailure(Call<LightTimeResponse> call, Throwable t) {
                 Timber.i( "error %s", t.getMessage() 
                 );
             }

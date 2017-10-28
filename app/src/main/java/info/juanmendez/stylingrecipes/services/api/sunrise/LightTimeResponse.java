@@ -8,7 +8,7 @@ import info.juanmendez.daynightthemescheduler.models.LightTime;
  * contact@juanmendez.info
  */
 
-public class Sun
+public class LightTimeResponse
 {
     private LightTime results;
 
@@ -36,7 +36,7 @@ public class Sun
 
     @Override
     public String toString() {
-        return "Sun{" +
+        return "LightTimeResponse{" +
                 "results=" + results +
                 ", status='" + status + '\'' +
                 '}';

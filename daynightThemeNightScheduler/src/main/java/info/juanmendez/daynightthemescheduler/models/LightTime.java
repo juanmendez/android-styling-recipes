@@ -44,4 +44,13 @@ public class LightTime {
     public void setNextSchedule(String nextSchedule) {
         this.nextSchedule = nextSchedule;
     }
+
+    @Override
+    public String toString() {
+        return "LightTime{" +
+                "sunrise='" + sunrise + '\'' +
+                ", sunset='" + sunset + '\'' +
+                ", nextSchedule='" + nextSchedule + '\'' +
+                '}';
+    }
 }
