@@ -18,6 +18,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 
 /**
@@ -55,6 +56,12 @@ public class DroidLightTimeRetro implements LightTimeRetro {
     private void makeCall(String dateString, Response<LightTime> response) {
 
         Location location = requestLocation();
+
+        if( location == null ){
+            Timber.e( "There is no location found!");
+            response.onResult( new LightTime() );
+            return;
+        }
 
         Call<LightTimeResponse> call = lightTimeCalls.getLightTime(location.getLatitude(), location.getLongitude(), 0, dateString);
 

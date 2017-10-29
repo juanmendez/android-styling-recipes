@@ -5,5 +5,6 @@
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/widget_layout"
     android:resizeMode="horizontal|vertical"
+    android:configure="info.juanmendez.stylingrecipes.ConfigActivity_"
     android:previewImage="@drawable/widget_screenshot">
 </appwidget-provider>

@@ -2,6 +2,7 @@ package info.juanmendez.stylingrecipes;
 
 import android.support.v7.app.AppCompatDelegate;
 
+import org.androidannotations.annotations.sharedpreferences.DefaultBoolean;
 import org.androidannotations.annotations.sharedpreferences.DefaultInt;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
 
@@ -14,4 +15,7 @@ import org.androidannotations.annotations.sharedpreferences.SharedPref;
 public interface ThemePrefs {
     @DefaultInt(AppCompatDelegate.MODE_NIGHT_AUTO)
     int dayNightMode();
+
+   @DefaultBoolean(false)
+   boolean isLocationGranted();
 }
