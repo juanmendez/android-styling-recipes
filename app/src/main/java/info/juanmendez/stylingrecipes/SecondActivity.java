@@ -1,6 +1,10 @@
 package info.juanmendez.stylingrecipes;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import org.androidannotations.annotations.AfterViews;
@@ -10,9 +14,6 @@ import org.androidannotations.annotations.EActivity;
 
 import info.juanmendez.stylingrecipes.services.DroidLightTimeRetro;
 import info.juanmendez.stylingrecipes.services.DroidNetworkService;
-import info.juanmendez.stylingrecipes.services.api.sunrise.LightTimeCalls;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
 
@@ -28,15 +29,39 @@ public class SecondActivity extends AppCompatActivity {
     @Bean
     DroidNetworkService networkService;
 
+    @Bean
+    DroidLightTimeRetro lightTimeRetro;
+
     @AfterViews
     public void afterViews() {
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.sunrise-sunset.org").addConverterFactory(GsonConverterFactory.create()).build();
-        LightTimeCalls service = retrofit.create( LightTimeCalls.class );
 
-        DroidLightTimeRetro lightTimeRetro = new DroidLightTimeRetro(retrofit, service );
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
 
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    1);
+        }else{
+            getLightTimes();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if( requestCode == 1 ){
+            getLightTimes();
+        }
+    }
+
+    private void getLightTimes(){
         lightTimeRetro.generateTodayTimeLight(result -> {
-            Timber.i( "LightTime result %s", result );
+            Timber.i( "LightTime result for today %s", result );
+        });
+
+        lightTimeRetro.generateTomorrowTimeLight( result -> {
+            Timber.i( "LightTime result for tomorrow %s", result );
         });
 
         Timber.i( "Is there connection %s", networkService.isOnline()?"yes":"false");

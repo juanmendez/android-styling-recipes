@@ -1,5 +1,14 @@
 package info.juanmendez.stylingrecipes.services;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
+
+import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
+import org.androidannotations.annotations.SystemService;
+
 import info.juanmendez.daynightthemescheduler.models.LightTime;
 import info.juanmendez.daynightthemescheduler.models.Response;
 import info.juanmendez.daynightthemescheduler.services.LightTimeRetro;
@@ -8,6 +17,7 @@ import info.juanmendez.stylingrecipes.services.api.sunrise.LightTimeResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
@@ -15,40 +25,77 @@ import retrofit2.Retrofit;
  * www.juanmendez.info
  * contact@juanmendez.info
  */
+@EBean
 public class DroidLightTimeRetro implements LightTimeRetro {
+
+    @SystemService
+    LocationManager locationManager;
+
+    @RootContext
+    Context rootContext;
+
     Retrofit retrofit;
     LightTimeCalls lightTimeCalls;
 
-    public DroidLightTimeRetro(Retrofit retrofit, LightTimeCalls lightTimeCalls) {
-        this.retrofit = retrofit;
-        this.lightTimeCalls = lightTimeCalls;
+    public DroidLightTimeRetro() {
+        retrofit = new Retrofit.Builder().baseUrl("https://api.sunrise-sunset.org").addConverterFactory(GsonConverterFactory.create()).build();
+        lightTimeCalls = retrofit.create(LightTimeCalls.class);
     }
 
     @Override
     public void generateTodayTimeLight(Response<LightTime> response) {
-        Call<LightTimeResponse> call = lightTimeCalls.getLightTime(41.8500300, -87.6500500, 0 );
+        makeCall("today", response);
+    }
+
+    @Override
+    public void generateTomorrowTimeLight(Response<LightTime> response) {
+        makeCall("tomorrow", response);
+    }
+
+    private void makeCall(String dateString, Response<LightTime> response) {
+
+        Location location = requestLocation();
+
+        Call<LightTimeResponse> call = lightTimeCalls.getLightTime(location.getLatitude(), location.getLongitude(), 0, dateString);
 
         call.enqueue(new Callback<LightTimeResponse>() {
             @Override
             public void onResponse(Call<LightTimeResponse> call, retrofit2.Response<LightTimeResponse> retrofitResponse) {
-                LightTimeResponse sun= retrofitResponse.body();
+                LightTimeResponse sun = retrofitResponse.body();
 
-                if( sun.getStatus().equals("OK")){
-                    response.onResult( sun.getResults() );
-                }else{
-                    response.onResult( new LightTime() );
+                if (sun.getStatus().equals("OK")) {
+                    response.onResult(sun.getResults());
+                } else {
+                    response.onResult(new LightTime());
                 }
             }
 
             @Override
             public void onFailure(Call<LightTimeResponse> call, Throwable t) {
-                response.onResult( new LightTime() );
+                response.onResult(new LightTime());
             }
         });
     }
 
-    @Override
-    public void generateTomorrowTimeLight(Response<LightTime> response) {
+    @SuppressLint("MissingPermission")
+    private Location requestLocation() {
 
+        // getting GPS status
+        boolean isGPSEnabled = locationManager
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        boolean isNetworkEnabled = locationManager
+                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (isGPSEnabled || isNetworkEnabled) {
+
+            if (isNetworkEnabled) {
+                return locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }else if (isGPSEnabled) {
+                return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            }
+        }
+
+        return null;
     }
 }
