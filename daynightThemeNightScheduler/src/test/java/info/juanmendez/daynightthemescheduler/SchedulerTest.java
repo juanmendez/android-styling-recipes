@@ -29,20 +29,20 @@ import static org.mockito.Mockito.mock;
  */
 public class SchedulerTest {
 
-    LocalTime sunrise;
-    LocalTime sunset;
+    LocalTime twistSunrise;
+    LocalTime twistSunset;
     LightTimeApi apiProxy;
-    LightTime lightTime;
+    LightTime appLightTime;
 
     boolean isOnline = true;
     NetworkService networkService;
 
     @Before
     public void before(){
-        lightTime = new LightTime("2017-10-18T12:07:26+00:00", "2017-10-18T23:03:42+00:00");
+        appLightTime = new LightTime("2017-10-18T12:07:26+00:00", "2017-10-18T23:03:42+00:00");
 
-        sunrise = LocalTimeUtils.getLocalTime( lightTime.getSunrise());
-        sunset = LocalTimeUtils.getLocalTime( lightTime.getSunset() );
+        twistSunrise = LocalTimeUtils.getLocalTime( appLightTime.getSunrise());
+        twistSunset = LocalTimeUtils.getLocalTime( appLightTime.getSunset() );
 
         generateProxy();
         generateNetworkService();
@@ -59,7 +59,7 @@ public class SchedulerTest {
 
         PowerMockito.doAnswer(invocation -> {
             Response<LightTime> response = invocation.getArgumentAt(0, Response.class);
-            response.onResult( lightTime );
+            response.onResult(appLightTime);
             return null;
         }).when( apiProxy ).generateTodayTimeLight(any(Response.class));
     }
@@ -68,16 +68,16 @@ public class SchedulerTest {
     @Test
     public void jodaTimeSpike(){
 
-        System.out.println( sunrise );
-        System.out.println( sunset );
+        System.out.println(twistSunrise);
+        System.out.println(twistSunset);
 
         LocalTime now = LocalTime.now();
 
-        if( now.isBefore(sunrise)){
+        if( now.isBefore(twistSunrise)){
             System.out.println( "it's very early morning screen is in night mode" );
         }
         else
-        if( now.isBefore(sunset)){
+        if( now.isBefore(twistSunset)){
             System.out.println( "screen is in day mode" );
         }
         else{
@@ -90,27 +90,27 @@ public class SchedulerTest {
 
         //5:00
         LocalTime now = new LocalTime(5, 0, 0 );
-        assertFalse( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
+        assertFalse( LocalTimeUtils.isDaylightScreen(now, twistSunrise, twistSunset));
 
         //8:00
         now = now.plusHours( 3 );
-        assertTrue( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
+        assertTrue( LocalTimeUtils.isDaylightScreen(now, twistSunrise, twistSunset));
 
         //16:00
         now = now.plusHours( 8 );
-        assertTrue( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
+        assertTrue( LocalTimeUtils.isDaylightScreen(now, twistSunrise, twistSunset));
 
         //18:00
         now = now.plusHours( 2 );
-        assertTrue( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
+        assertTrue( LocalTimeUtils.isDaylightScreen(now, twistSunrise, twistSunset));
 
         //18:03
         now = now.plusMinutes(3);
-        assertTrue( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
+        assertTrue( LocalTimeUtils.isDaylightScreen(now, twistSunrise, twistSunset));
 
         //18:03:43 pm, we are passed by one second!
         now = now.plusSeconds( 43);
-        assertFalse( LocalTimeUtils.isDaylightScreen(now, sunrise, sunset ));
+        assertFalse( LocalTimeUtils.isDaylightScreen(now, twistSunrise, twistSunset));
 
         //how do we do a substraction? Example, how much time is needed to get to 19:00 hours?
         LocalTime nineteen = new LocalTime( 19, 0, 0 );
@@ -123,8 +123,8 @@ public class SchedulerTest {
 
         //so it's 22:00, and I want to get up at 5:00, how many minutes are total?
         now = new LocalTime(22, 0, 0 );
-        sunrise = new LocalTime( 5, 0, 0 );
-        diff = new Period( now, sunrise );
+        twistSunrise = new LocalTime( 5, 0, 0 );
+        diff = new Period( now, twistSunrise);
 
         //so I am aware I will sleep 7 hours, is that right?
         //so the test failed, it said difference was -17 hours. Plus 24 would had made a perfect 7!..
@@ -135,13 +135,13 @@ public class SchedulerTest {
         //cause I didn't sleep for three days.. :(
         //just to remind this is great for periods which are negative
         now = new LocalTime(17,0,0);
-        diff = (new Period(now, sunrise)).plus( new Period(24,0,0,0));
+        diff = (new Period(now, twistSunrise)).plus( new Period(24,0,0,0));
         assertEquals( diff.getHours(), 12 );
 
         //lets sleep between 23:00, and 1:00
         now = new LocalTime(23,0,0);
-        sunrise = new LocalTime(1,0,0);
-        diff = (new Period(now, sunrise)).plus( new Period(24,0,0,0));
+        twistSunrise = new LocalTime(1,0,0);
+        diff = (new Period(now, twistSunrise)).plus( new Period(24,0,0,0));
         assertEquals( diff.getHours(), 2 );
 
     }
@@ -163,8 +163,8 @@ public class SchedulerTest {
     @Test
     public void checkIfLightTimeIsToday(){
 
-        LocalDateTime sunriseDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunrise() );
-        LocalDateTime sunsetDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunset() );
+        LocalDateTime sunriseDateTime = LocalTimeUtils.getLocalDateTime( appLightTime.getSunrise() );
+        LocalDateTime sunsetDateTime = LocalTimeUtils.getLocalDateTime( appLightTime.getSunset() );
         LocalDateTime now = LocalDateTime.now();
 
         //appLightTime happened not today
@@ -179,7 +179,7 @@ public class SchedulerTest {
 
     @Test
     public void testChangingAnotherDateTimeForTodays(){
-        LocalDateTime sunriseDateTime = LocalTimeUtils.getLocalDateTime( lightTime.getSunrise() );
+        LocalDateTime sunriseDateTime = LocalTimeUtils.getLocalDateTime( appLightTime.getSunrise() );
         LocalDateTime sunriseToday =  sunriseDateTime.toLocalTime().toDateTimeToday().toLocalDateTime();
         assertTrue( sunriseToday.toLocalDate().equals( sunriseToday.toLocalDate() ));
     }

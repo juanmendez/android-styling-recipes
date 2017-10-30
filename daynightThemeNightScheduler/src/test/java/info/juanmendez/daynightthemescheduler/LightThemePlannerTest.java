@@ -41,16 +41,19 @@ import static org.powermock.api.mockito.PowerMockito.doAnswer;
  */
 public class LightThemePlannerTest {
 
-    LocalTime sunrise;
-    LocalTime sunset;
+    LocalTime twistSunrise;
+    LocalTime twistSunset;
+
     LightTimeApi apiRetro;
+
     LightTime appLightTime;
-    LightTime proxyTodayLightTime;
-    LightTime proxyTomorrowLightTime;
+    LightTime twistApiToday;
+    LightTime twistApiTomorrow;
+
     LightThemePlanner planner;
 
-    boolean isOnline = true;
-    private boolean locationGranted = true;
+    boolean twistIsOnline = true;
+    private boolean twistLocationGranted = true;
     NetworkService networkService;
     LocationService locationService;
     LightThemeModule m;
@@ -58,11 +61,11 @@ public class LightThemePlannerTest {
     @Before
     public void before(){
         appLightTime = new LightTime();
-        proxyTodayLightTime = new LightTime();
-        proxyTomorrowLightTime = new LightTime();
+        twistApiToday = new LightTime();
+        twistApiTomorrow = new LightTime();
 
-        sunrise = LocalTime.now();
-        sunset = LocalTime.now();
+        twistSunrise = LocalTime.now();
+        twistSunset = LocalTime.now();
 
         generateProxy();
         generateNetworkService();
@@ -78,7 +81,7 @@ public class LightThemePlannerTest {
 
     private void generateNetworkService() {
         networkService = mock( NetworkService.class );
-        doAnswer(invocation -> isOnline).when( networkService ).isOnline();
+        doAnswer(invocation -> twistIsOnline).when( networkService ).isOnline();
     }
 
     private void generateProxy() {
@@ -87,32 +90,32 @@ public class LightThemePlannerTest {
 
         doAnswer(invocation -> {
             Response<LightTime> response = invocation.getArgumentAt(0, Response.class);
-            response.onResult(proxyTodayLightTime);
+            response.onResult(twistApiToday);
             return null;
         }).when(apiRetro).generateTodayTimeLight(any(Response.class));
 
         doAnswer(invocation -> {
             Response<LightTime> response = invocation.getArgumentAt(0, Response.class);
-            response.onResult(proxyTomorrowLightTime);
+            response.onResult(twistApiTomorrow);
             return null;
         }).when(apiRetro).generateTomorrowTimeLight(any(Response.class));
     }
 
     private void generateLocationService(){
         locationService = mock( LocationService.class );
-        doAnswer(invocation -> locationGranted).when( locationService ).isGranted();
+        doAnswer(invocation -> twistLocationGranted).when( locationService ).isGranted();
         doReturn( new Location("NONE")).when( locationService ).getLastKnownLocation();
     }
 
     @Test
     public void firstTime(){
 
-        //if values in appLightTime are empty, we need to get today's lightTime
+        //if values in appLightTime are empty, we need to get today's appLightTime
         if( appLightTime.getSunrise().isEmpty() || appLightTime.getSunrise().isEmpty() ){
 
             //we are defining what proxy is going to return next
-            proxyTodayLightTime.setSunrise( "2017-10-27T12:07:26+00:00" );
-            proxyTodayLightTime.setSunset( "2017-10-27T23:03:42+00:00" );
+            twistApiToday.setSunrise( "2017-10-27T12:07:26+00:00" );
+            twistApiToday.setSunset( "2017-10-27T23:03:42+00:00" );
 
             apiRetro.generateTodayTimeLight(result -> {
                 appLightTime.setSunrise( result.getSunrise());
@@ -120,49 +123,49 @@ public class LightThemePlannerTest {
             });
         }
 
-        //do we schedule for sunrise, sunset, or none?
-        sunrise = LocalTimeUtils.getLocalTime( appLightTime.getSunrise() );
-        sunset = LocalTimeUtils.getLocalTime( appLightTime.getSunset() );
+        //do we schedule for twistSunrise, twistSunset, or none?
+        twistSunrise = LocalTimeUtils.getLocalTime( appLightTime.getSunrise() );
+        twistSunset = LocalTimeUtils.getLocalTime( appLightTime.getSunset() );
 
-        assertEquals( whatSchedule(  LocalTime.parse( "00:40:00"), sunrise, sunset), SUNRISE_SCHEDULE  );
-        assertEquals( whatSchedule(  LocalTime.parse( "16:40:00"), sunrise, sunset), SUNSET_SCHEDULE  );
-        assertEquals( whatSchedule(  LocalTime.parse( "23:44:00"), sunrise, sunset), TOMORROW_SCHEDULE  );
+        assertEquals( whatSchedule(  LocalTime.parse( "00:40:00"), twistSunrise, twistSunset), SUNRISE_SCHEDULE  );
+        assertEquals( whatSchedule(  LocalTime.parse( "16:40:00"), twistSunrise, twistSunset), SUNSET_SCHEDULE  );
+        assertEquals( whatSchedule(  LocalTime.parse( "23:44:00"), twistSunrise, twistSunset), TOMORROW_SCHEDULE  );
 
-        //what if we need tomorrows lightTime instead?
-        proxyTomorrowLightTime.setSunrise( "2017-10-28T12:07:26+00:00" );
-        proxyTomorrowLightTime.setSunset( "2017-10-28T23:03:42+00:00" );
+        //what if we need tomorrows appLightTime instead?
+        twistApiTomorrow.setSunrise( "2017-10-28T12:07:26+00:00" );
+        twistApiTomorrow.setSunset( "2017-10-28T23:03:42+00:00" );
         apiRetro.generateTomorrowTimeLight(result -> {
             appLightTime.setSunrise( result.getSunrise());
             appLightTime.setSunset( result.getSunset());
         });
 
-        //so proxy is giving back sunrise for tomorrow.
+        //so proxy is giving back twistSunrise for tomorrow.
         assertEquals( LocalTimeUtils.getLocalDateTime(appLightTime.getSunrise()).toLocalDate(), LocalDate.parse("2017-10-27").plusDays(1) );
     }
 
     @Test
     public void firstTimeInPlanner(){
-        proxyTodayLightTime.setSunrise( "2017-10-27T12:07:26+00:00" );
-        proxyTodayLightTime.setSunset( "2017-10-27T23:03:42+00:00" );
+        twistApiToday.setSunrise( "2017-10-27T12:07:26+00:00" );
+        twistApiToday.setSunset( "2017-10-27T23:03:42+00:00" );
 
-        proxyTomorrowLightTime.setSunrise( "2017-10-28T12:07:26+00:00" );
-        proxyTomorrowLightTime.setSunset( "2017-10-28T23:03:42+00:00" );
+        twistApiTomorrow.setSunrise( "2017-10-28T12:07:26+00:00" );
+        twistApiTomorrow.setSunset( "2017-10-28T23:03:42+00:00" );
 
         Whitebox.setInternalState( planner, "now", LocalTime.parse( "00:40:00") );
         planner.provideNextTimeLight(result -> {
-            assertEquals(proxyTodayLightTime.getSunrise(), result.getNextSchedule());
+            assertEquals(twistApiToday.getSunrise(), result.getNextSchedule());
         });
 
         Whitebox.setInternalState( planner, "now", LocalTime.parse( "16:40:00") );
         planner.provideNextTimeLight(result -> {
-            assertEquals(proxyTodayLightTime.getSunset(), result.getNextSchedule());
+            assertEquals(twistApiToday.getSunset(), result.getNextSchedule());
         });
 
         Whitebox.setInternalState( planner, "now", LocalTime.parse( "23:00:00") );
         planner.provideNextTimeLight(result -> {
-            assertEquals( result.getSunrise(), proxyTomorrowLightTime.getSunrise() );
-            assertEquals( result.getSunset(), proxyTomorrowLightTime.getSunset() );
-            assertEquals( result.getNextSchedule(), proxyTomorrowLightTime.getSunrise() );
+            assertEquals( result.getSunrise(), twistApiTomorrow.getSunrise() );
+            assertEquals( result.getSunset(), twistApiTomorrow.getSunset() );
+            assertEquals( result.getNextSchedule(), twistApiTomorrow.getSunrise() );
         });
     }
 
@@ -172,7 +175,7 @@ public class LightThemePlannerTest {
      */
     @Test
     public void offlineTest(){
-        isOnline = false;
+        twistIsOnline = false;
 
         String yesterdaySunrise = "2017-10-26T12:07:26+00:00";
         String yesterdaySunset = "2017-10-26T23:03:42+00:00";
@@ -183,17 +186,17 @@ public class LightThemePlannerTest {
         if( !networkService.isOnline() ){
             //reuse what's on appLightTime from another date into today
 
-            proxyTodayLightTime.setSunrise( LocalTimeUtils.getDayAsString( appLightTime.getSunrise(), 0 ));
-            proxyTodayLightTime.setSunset( LocalTimeUtils.getDayAsString( appLightTime.getSunset(), 0 ));
+            twistApiToday.setSunrise( LocalTimeUtils.getDayAsString( appLightTime.getSunrise(), 0 ));
+            twistApiToday.setSunset( LocalTimeUtils.getDayAsString( appLightTime.getSunset(), 0 ));
 
-            assertEquals(LocalDateTime.parse( proxyTodayLightTime.getSunrise()).toLocalDate(), LocalDate.now() );
-            assertEquals(LocalDateTime.parse( proxyTodayLightTime.getSunset()).toLocalDate(), LocalDate.now() );
+            assertEquals(LocalDateTime.parse( twistApiToday.getSunrise()).toLocalDate(), LocalDate.now() );
+            assertEquals(LocalDateTime.parse( twistApiToday.getSunset()).toLocalDate(), LocalDate.now() );
         }
     }
 
     @Test
     public void checkIfItsToday(){
-        //we want to get today or tomorrows sunrise and sunset but we might not be online..
+        //we want to get today or tomorrows twistSunrise and twistSunset but we might not be online..
         //what do we do?
         String yesterdaySunrise = "2017-10-26T12:07:26+00:00";
         String yesterdaySunset = "2017-10-26T23:03:42+00:00";
@@ -208,12 +211,12 @@ public class LightThemePlannerTest {
         assertTrue( LocalTimeUtils.isSameDay( yesterdaySunrise, now ));
         assertFalse( LocalTimeUtils.isSameDay( yesterdaySunrise, "" ));
 
-        proxyTodayLightTime.setSunrise( "2017-10-27T12:07:26+00:00" );
-        proxyTodayLightTime.setSunset( "2017-10-27T23:03:42+00:00" );
+        twistApiToday.setSunrise( "2017-10-27T12:07:26+00:00" );
+        twistApiToday.setSunset( "2017-10-27T23:03:42+00:00" );
     }
 
     /**
-     * The app has sunrise and sunset from yesterday.
+     * The app has twistSunrise and twistSunset from yesterday.
      * We are requesting today's. Do we need new data?
      */
     @Test
@@ -232,7 +235,7 @@ public class LightThemePlannerTest {
         };
 
         proxy.generateTodayTimeLight( response );
-        assertEquals( proxyResult[0].getSunrise(), proxyTodayLightTime.getSunrise() );
+        assertEquals( proxyResult[0].getSunrise(), twistApiToday.getSunrise() );
         verify( apiRetro ).generateTodayTimeLight( any(Response.class));
 
         reset( apiRetro );
@@ -247,12 +250,12 @@ public class LightThemePlannerTest {
     }
 
     /**
-     * we want to find sunrise and sunset for today, but we are offline..
+     * we want to find twistSunrise and twistSunset for today, but we are offline..
      * lets test if we can copy the one from the day before
      */
     @Test
     public void testForNetworkIssues(){
-        isOnline = false;
+        twistIsOnline = false;
 
         String yesterdaySunrise = "2017-10-26T12:07:26+00:00";
         String yesterdaySunset = "2017-10-26T23:03:42+00:00";
@@ -288,13 +291,13 @@ public class LightThemePlannerTest {
         proxy.generateTomorrowTimeLight( response );
         assertFalse(LightTimeUtils.isValid( proxyResult[0]));
 
-        //knowing that our response has an invalid lightTime means
+        //knowing that our response has an invalid appLightTime means
         //we can use this flag to make a special case.
     }
 
     @Test
     public void testPlannerWithNetworkIssues(){
-        isOnline = false;
+        twistIsOnline = false;
         appLightTime.setSunrise("");
         appLightTime.setSunset("");
 
@@ -308,8 +311,8 @@ public class LightThemePlannerTest {
         assertFalse(LightTimeUtils.isValid( proxyResult[0]));
 
         //if we have a network, but we don't have location permissions
-        isOnline = true;
-        locationGranted = false;
+        twistIsOnline = true;
+        twistLocationGranted = false;
 
         planner.provideNextTimeLight( response );
         assertFalse(LightTimeUtils.isValid( proxyResult[0]));

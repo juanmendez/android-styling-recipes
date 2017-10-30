@@ -53,7 +53,6 @@ public class DroidLightThemeClient implements LightThemeClient {
                             .applyLocationService( locationService )
                             .applyNetworkService( networkService )
                             .applyObserversCount( 0 );
-
         return m;
     }
 }

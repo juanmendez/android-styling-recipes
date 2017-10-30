@@ -18,6 +18,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
+import static org.powermock.api.mockito.PowerMockito.spy;
 
 /**
  * Created by Juan Mendez on 10/29/2017.
@@ -26,45 +27,53 @@ import static org.powermock.api.mockito.PowerMockito.doAnswer;
  * LightThemeScheduler based on several conditions figures out if there is a schedule to carry over
  */
 public class LightThemeSchedulerTest {
-    LocalTime sunrise;
-    LocalTime sunset;
+    LocalTime twistSunrise;
+    LocalTime twistSunset;
+
     LightTimeApi apiRetro;
     LightTime appLightTime;
-    LightTime proxyTodayLightTime;
-    LightTime proxyTomorrowLightTime;
+    LightTime twistApiToday;
+    LightTime twistApiTomorrow;
+
     LightThemePlanner planner;
     LocationService locationService;
+    int twistObserversCount = 0;
 
-    boolean isOnline = true;
-    boolean locationGranted = true;
+    boolean twistIsOnline = true;
+    boolean twistLocationGranted = true;
     NetworkService networkService;
+    LightThemeModule m;
 
     @Before
     public void onBefore(){
 
 
         appLightTime = new LightTime();
-        proxyTodayLightTime = new LightTime();
-        proxyTomorrowLightTime = new LightTime();
+        twistApiToday = new LightTime();
+        twistApiTomorrow = new LightTime();
 
-        sunrise = LocalTime.now();
-        sunset = LocalTime.now();
+        twistSunrise = LocalTime.now();
+        twistSunset = LocalTime.now();
 
         generateProxy();
         generateNetworkService();
         generateLocationService();
 
-        LightThemeModule m = LightThemeModule.create()
-                            .applyLighTimeApi( apiRetro )
-                            .applyLocationService(locationService)
-                            .applyNetworkService(networkService);
+        m = spy( LightThemeModule.create()
+                .applyLighTimeApi( apiRetro )
+                .applyLocationService(locationService)
+                .applyNetworkService(networkService)
+                .applyObserversCount( 0 ) );
+
+        //we can manipulate count by setting twistObserversCount;
+        doAnswer(invocation -> twistObserversCount).when( m ).getObserversCount();
 
         planner = new LightThemePlanner( m, appLightTime );
     }
 
     private void generateNetworkService() {
         networkService = mock( NetworkService.class );
-        doAnswer(invocation -> isOnline).when( networkService ).isOnline();
+        doAnswer(invocation -> twistIsOnline).when( networkService ).isOnline();
     }
 
     private void generateProxy() {
@@ -73,20 +82,20 @@ public class LightThemeSchedulerTest {
 
         doAnswer(invocation -> {
             Response<LightTime> response = invocation.getArgumentAt(0, Response.class);
-            response.onResult(proxyTodayLightTime);
+            response.onResult(twistApiToday);
             return null;
         }).when(apiRetro).generateTodayTimeLight(any(Response.class));
 
         doAnswer(invocation -> {
             Response<LightTime> response = invocation.getArgumentAt(0, Response.class);
-            response.onResult(proxyTomorrowLightTime);
+            response.onResult(twistApiTomorrow);
             return null;
         }).when(apiRetro).generateTomorrowTimeLight(any(Response.class));
     }
 
     private void generateLocationService(){
         locationService = mock( LocationService.class );
-        doAnswer(invocation -> locationGranted).when( locationService ).isGranted();
+        doAnswer(invocation -> twistLocationGranted).when( locationService ).isGranted();
         doReturn( new Location("NONE")).when( locationService ).getLastKnownLocation();
     }
 

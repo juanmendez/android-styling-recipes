@@ -1,6 +1,7 @@
 package info.juanmendez.daynightthemescheduler;
 
 import info.juanmendez.daynightthemescheduler.services.LightThemeClient;
+import info.juanmendez.daynightthemescheduler.services.LightThemePlanner;
 
 /**
  * Created by Juan Mendez on 10/17/2017.
@@ -11,9 +12,10 @@ import info.juanmendez.daynightthemescheduler.services.LightThemeClient;
 class LightThemeScheduler {
 
     LightThemeClient client;
-    LightThemeScheduler scheduler;
+    LightThemePlanner planner;
 
     public LightThemeScheduler(LightThemeClient lightTimeOwner) {
         client = lightTimeOwner;
+        planner = new LightThemePlanner( client.getLightTimeModule(), client.getAppLightTime() );
     }
 }
