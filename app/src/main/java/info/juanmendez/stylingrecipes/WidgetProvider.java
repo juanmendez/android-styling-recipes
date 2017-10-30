@@ -12,7 +12,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EReceiver;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
-import info.juanmendez.stylingrecipes.services.DroidLightTimeRetro;
+import info.juanmendez.stylingrecipes.services.DroidLightTimeApi;
 import info.juanmendez.stylingrecipes.services.DroidNetworkService;
 import timber.log.Timber;
 
@@ -34,7 +34,7 @@ public class WidgetProvider extends AppWidgetProvider {
     DroidNetworkService networkService;
 
     @Bean
-    DroidLightTimeRetro lightTimeRetro;
+    DroidLightTimeApi lightTimeRetro;
 
     @Override
     public void onReceive(Context context, Intent intent) {

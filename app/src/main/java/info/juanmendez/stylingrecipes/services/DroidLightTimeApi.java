@@ -23,7 +23,7 @@ import timber.log.Timber;
  * contact@juanmendez.info
  */
 @EBean
-public class DroidLightTimeRetro implements LightTimeApi {
+public class DroidLightTimeApi implements LightTimeApi {
 
     @Bean
     DroidLocationService locationService;
@@ -31,7 +31,7 @@ public class DroidLightTimeRetro implements LightTimeApi {
     Retrofit retrofit;
     LightTimeCalls lightTimeCalls;
 
-    public DroidLightTimeRetro() {
+    public DroidLightTimeApi() {
         retrofit = new Retrofit.Builder().baseUrl("https://api.sunrise-sunset.org").addConverterFactory(GsonConverterFactory.create()).build();
         lightTimeCalls = retrofit.create(LightTimeCalls.class);
     }

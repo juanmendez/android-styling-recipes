@@ -11,20 +11,20 @@ import org.junit.Test;
 import org.powermock.reflect.Whitebox;
 
 import info.juanmendez.daynightthemescheduler.models.LightTime;
-import info.juanmendez.daynightthemescheduler.models.LightTimeModule;
+import info.juanmendez.daynightthemescheduler.models.LightThemeModule;
 import info.juanmendez.daynightthemescheduler.models.Response;
 import info.juanmendez.daynightthemescheduler.services.LightTimeApi;
-import info.juanmendez.daynightthemescheduler.services.LightTimePlanner;
+import info.juanmendez.daynightthemescheduler.services.LightThemePlanner;
 import info.juanmendez.daynightthemescheduler.services.LocationService;
 import info.juanmendez.daynightthemescheduler.services.NetworkService;
 import info.juanmendez.daynightthemescheduler.services.ProxyLightTimeApi;
 import info.juanmendez.daynightthemescheduler.utils.LightTimeUtils;
 import info.juanmendez.daynightthemescheduler.utils.LocalTimeUtils;
 
-import static info.juanmendez.daynightthemescheduler.services.LightTimePlanner.SUNRISE_SCHEDULE;
-import static info.juanmendez.daynightthemescheduler.services.LightTimePlanner.SUNSET_SCHEDULE;
-import static info.juanmendez.daynightthemescheduler.services.LightTimePlanner.TOMORROW_SCHEDULE;
-import static info.juanmendez.daynightthemescheduler.services.LightTimePlanner.whatSchedule;
+import static info.juanmendez.daynightthemescheduler.services.LightThemePlanner.SUNRISE_SCHEDULE;
+import static info.juanmendez.daynightthemescheduler.services.LightThemePlanner.SUNSET_SCHEDULE;
+import static info.juanmendez.daynightthemescheduler.services.LightThemePlanner.TOMORROW_SCHEDULE;
+import static info.juanmendez.daynightthemescheduler.services.LightThemePlanner.whatSchedule;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -39,7 +39,7 @@ import static org.powermock.api.mockito.PowerMockito.doAnswer;
 /**
  * These tests were made in order to make the functionality needed in ProxyLightTimeApi
  */
-public class LightTimePlannerTest {
+public class LightThemePlannerTest {
 
     LocalTime sunrise;
     LocalTime sunset;
@@ -47,13 +47,13 @@ public class LightTimePlannerTest {
     LightTime appLightTime;
     LightTime proxyTodayLightTime;
     LightTime proxyTomorrowLightTime;
-    LightTimePlanner planner;
+    LightThemePlanner planner;
 
     boolean isOnline = true;
     private boolean locationGranted = true;
     NetworkService networkService;
     LocationService locationService;
-    LightTimeModule m;
+    LightThemeModule m;
 
     @Before
     public void before(){
@@ -68,12 +68,12 @@ public class LightTimePlannerTest {
         generateNetworkService();
         generateLocationService();
 
-        m = LightTimeModule.create()
+        m = LightThemeModule.create()
                 .applyLighTimeApi( apiRetro )
                 .applyLocationService(locationService)
                 .applyNetworkService(networkService);
 
-        planner = new LightTimePlanner( m, appLightTime );
+        planner = new LightThemePlanner( m, appLightTime );
     }
 
     private void generateNetworkService() {

@@ -3,7 +3,7 @@ package info.juanmendez.daynightthemescheduler.services;
 import org.joda.time.DateTime;
 
 import info.juanmendez.daynightthemescheduler.models.LightTime;
-import info.juanmendez.daynightthemescheduler.models.LightTimeModule;
+import info.juanmendez.daynightthemescheduler.models.LightThemeModule;
 import info.juanmendez.daynightthemescheduler.models.Response;
 import info.juanmendez.daynightthemescheduler.utils.LightTimeUtils;
 import info.juanmendez.daynightthemescheduler.utils.LocalTimeUtils;
@@ -15,11 +15,11 @@ import info.juanmendez.daynightthemescheduler.utils.LocalTimeUtils;
  */
 
 public class ProxyLightTimeApi implements LightTimeApi {
-    LightTimeModule m;
+    LightThemeModule m;
     LightTime appLightTime;
 
 
-    public ProxyLightTimeApi( LightTimeModule module, LightTime lightTime  ) {
+    public ProxyLightTimeApi(LightThemeModule module, LightTime lightTime  ) {
         m = module;
         this.appLightTime = lightTime;
     }

@@ -10,33 +10,33 @@ import info.juanmendez.daynightthemescheduler.services.NetworkService;
  * contact@juanmendez.info
  */
 
-public class LightTimeModule {
+public class LightThemeModule {
 
     NetworkService networkService;
     LocationService locationService;
     LightTimeApi lightTimeApi;
     int observersCount;
 
-    public static LightTimeModule create(){
-        return new LightTimeModule();
+    public static LightThemeModule create(){
+        return new LightThemeModule();
     }
 
-    public LightTimeModule applyNetworkService(NetworkService networkService) {
+    public LightThemeModule applyNetworkService(NetworkService networkService) {
         this.networkService = networkService;
         return this;
     }
 
-    public LightTimeModule applyLocationService(LocationService locationService) {
+    public LightThemeModule applyLocationService(LocationService locationService) {
         this.locationService = locationService;
         return this;
     }
 
-    public LightTimeModule applyLighTimeApi(LightTimeApi lightTimeApi) {
+    public LightThemeModule applyLighTimeApi(LightTimeApi lightTimeApi) {
         this.lightTimeApi = lightTimeApi;
         return this;
     }
 
-    public LightTimeModule applyObserversCount(int count) {
+    public LightThemeModule applyObserversCount(int count) {
         this.observersCount = count;
         return this;
     }

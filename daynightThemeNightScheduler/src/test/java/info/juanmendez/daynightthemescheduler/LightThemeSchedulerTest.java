@@ -7,10 +7,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import info.juanmendez.daynightthemescheduler.models.LightTime;
-import info.juanmendez.daynightthemescheduler.models.LightTimeModule;
+import info.juanmendez.daynightthemescheduler.models.LightThemeModule;
 import info.juanmendez.daynightthemescheduler.models.Response;
 import info.juanmendez.daynightthemescheduler.services.LightTimeApi;
-import info.juanmendez.daynightthemescheduler.services.LightTimePlanner;
+import info.juanmendez.daynightthemescheduler.services.LightThemePlanner;
 import info.juanmendez.daynightthemescheduler.services.LocationService;
 import info.juanmendez.daynightthemescheduler.services.NetworkService;
 
@@ -18,7 +18,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
-import static org.powermock.api.mockito.PowerMockito.spy;
 
 /**
  * Created by Juan Mendez on 10/29/2017.
@@ -33,18 +32,16 @@ public class LightThemeSchedulerTest {
     LightTime appLightTime;
     LightTime proxyTodayLightTime;
     LightTime proxyTomorrowLightTime;
-    LightTimePlanner planner;
+    LightThemePlanner planner;
     LocationService locationService;
 
     boolean isOnline = true;
     boolean locationGranted = true;
     NetworkService networkService;
 
-    private LightThemeScheduler lightThemeScheduler;
-
     @Before
     public void onBefore(){
-        lightThemeScheduler = spy( LightThemeScheduler.build() );
+
 
         appLightTime = new LightTime();
         proxyTodayLightTime = new LightTime();
@@ -57,12 +54,12 @@ public class LightThemeSchedulerTest {
         generateNetworkService();
         generateLocationService();
 
-        LightTimeModule m = LightTimeModule.create()
+        LightThemeModule m = LightThemeModule.create()
                             .applyLighTimeApi( apiRetro )
                             .applyLocationService(locationService)
                             .applyNetworkService(networkService);
 
-        planner = new LightTimePlanner( m, appLightTime );
+        planner = new LightThemePlanner( m, appLightTime );
     }
 
     private void generateNetworkService() {
@@ -96,9 +93,5 @@ public class LightThemeSchedulerTest {
     @Test
     public void testScheduler(){
 
-
     }
-
-
-
 }

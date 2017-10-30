@@ -3,7 +3,7 @@ package info.juanmendez.daynightthemescheduler.services;
 import org.joda.time.LocalTime;
 
 import info.juanmendez.daynightthemescheduler.models.LightTime;
-import info.juanmendez.daynightthemescheduler.models.LightTimeModule;
+import info.juanmendez.daynightthemescheduler.models.LightThemeModule;
 import info.juanmendez.daynightthemescheduler.models.Response;
 import info.juanmendez.daynightthemescheduler.utils.LightTimeUtils;
 import info.juanmendez.daynightthemescheduler.utils.LocalTimeUtils;
@@ -14,7 +14,7 @@ import info.juanmendez.daynightthemescheduler.utils.LocalTimeUtils;
  * contact@juanmendez.info
  * This class takes care of figuring out the light times needed for either today, tomorrow or both
  */
-public class LightTimePlanner {
+public class LightThemePlanner {
 
     public static final int NO_SCHEDULE = 0;
     public static final int SUNRISE_SCHEDULE = 1;
@@ -25,10 +25,10 @@ public class LightTimePlanner {
     private LocalTime now  = LocalTime.now();
 
     /**
-     * @param ApiRetro makes calls to get
+     * @param module
      * @param lightTime
      */
-    public LightTimePlanner(LightTimeModule module, LightTime lightTime ) {
+    public LightThemePlanner(LightThemeModule module, LightTime lightTime ) {
         apiProxy = new ProxyLightTimeApi( module, lightTime );
     }
 
