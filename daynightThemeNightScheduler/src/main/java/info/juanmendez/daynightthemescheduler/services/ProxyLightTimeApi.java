@@ -2,10 +2,11 @@ package info.juanmendez.daynightthemescheduler.services;
 
 import org.joda.time.DateTime;
 
+import info.juanmendez.daynightthemescheduler.models.LightTime;
+import info.juanmendez.daynightthemescheduler.models.LightTimeModule;
+import info.juanmendez.daynightthemescheduler.models.Response;
 import info.juanmendez.daynightthemescheduler.utils.LightTimeUtils;
 import info.juanmendez.daynightthemescheduler.utils.LocalTimeUtils;
-import info.juanmendez.daynightthemescheduler.models.LightTime;
-import info.juanmendez.daynightthemescheduler.models.Response;
 
 /**
  * Created by Juan Mendez on 10/27/2017.
@@ -13,15 +14,14 @@ import info.juanmendez.daynightthemescheduler.models.Response;
  * contact@juanmendez.info
  */
 
-public class ApiProxy implements LightTimeRetro {
-    NetworkService networkService;
+public class ProxyLightTimeApi implements LightTimeApi {
+    LightTimeModule m;
     LightTime appLightTime;
-    LightTimeRetro webService;
 
-    public ApiProxy(NetworkService networkService, LightTimeRetro webService, LightTime appLightTime) {
-        this.networkService = networkService;
-        this.webService = webService;
-        this.appLightTime = appLightTime;
+
+    public ProxyLightTimeApi( LightTimeModule module, LightTime lightTime  ) {
+        m = module;
+        this.appLightTime = lightTime;
     }
 
     /**
@@ -36,8 +36,8 @@ public class ApiProxy implements LightTimeRetro {
         //we check if what we have is already cached
         if(LocalTimeUtils.isSameDay( appLightTime.getSunrise(), DateTime.now().toString() )){
             response.onResult( LightTimeUtils.clone(appLightTime) );
-        }else if( networkService.isOnline() ){
-             webService.generateTodayTimeLight( response );
+        }else if( m.getNetworkService().isOnline() && m.getLocationService().isGranted() ){
+             m.getLightTimeApi().generateTodayTimeLight( response );
         }else if( LightTimeUtils.isValid(appLightTime)){
             response.onResult( LightTimeUtils.cloneForAnotherDay(appLightTime, 0 ) );
         }else{
@@ -53,8 +53,8 @@ public class ApiProxy implements LightTimeRetro {
      */
     @Override
     public void generateTomorrowTimeLight(Response<LightTime> response) {
-        if( networkService.isOnline() ){
-            webService.generateTomorrowTimeLight( response );
+        if( m.getNetworkService().isOnline() && m.getLocationService().isGranted() ){
+            m.getLightTimeApi().generateTomorrowTimeLight( response );
         }else if( LightTimeUtils.isValid(appLightTime)){
             response.onResult( LightTimeUtils.cloneForAnotherDay(appLightTime, 1 ) );
         }else{

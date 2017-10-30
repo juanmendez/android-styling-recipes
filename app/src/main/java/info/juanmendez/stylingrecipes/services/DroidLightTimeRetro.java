@@ -1,17 +1,13 @@
 package info.juanmendez.stylingrecipes.services;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.location.Location;
-import android.location.LocationManager;
 
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.RootContext;
-import org.androidannotations.annotations.SystemService;
 
 import info.juanmendez.daynightthemescheduler.models.LightTime;
 import info.juanmendez.daynightthemescheduler.models.Response;
-import info.juanmendez.daynightthemescheduler.services.LightTimeRetro;
+import info.juanmendez.daynightthemescheduler.services.LightTimeApi;
 import info.juanmendez.stylingrecipes.services.api.sunrise.LightTimeCalls;
 import info.juanmendez.stylingrecipes.services.api.sunrise.LightTimeResponse;
 import retrofit2.Call;
@@ -27,13 +23,10 @@ import timber.log.Timber;
  * contact@juanmendez.info
  */
 @EBean
-public class DroidLightTimeRetro implements LightTimeRetro {
+public class DroidLightTimeRetro implements LightTimeApi {
 
-    @SystemService
-    LocationManager locationManager;
-
-    @RootContext
-    Context rootContext;
+    @Bean
+    DroidLocationService locationService;
 
     Retrofit retrofit;
     LightTimeCalls lightTimeCalls;
@@ -55,7 +48,7 @@ public class DroidLightTimeRetro implements LightTimeRetro {
 
     private void makeCall(String dateString, Response<LightTime> response) {
 
-        Location location = requestLocation();
+        Location location = locationService.getLastKnownLocation();
 
         if( location == null ){
             Timber.e( "There is no location found!");
@@ -82,27 +75,5 @@ public class DroidLightTimeRetro implements LightTimeRetro {
                 response.onResult(new LightTime());
             }
         });
-    }
-
-    @SuppressLint("MissingPermission")
-    private Location requestLocation() {
-
-        // getting GPS status
-        boolean isGPSEnabled = locationManager
-                .isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        boolean isNetworkEnabled = locationManager
-                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        if (isGPSEnabled || isNetworkEnabled) {
-
-            if (isNetworkEnabled) {
-                return locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            }else if (isGPSEnabled) {
-                return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            }
-        }
-
-        return null;
     }
 }

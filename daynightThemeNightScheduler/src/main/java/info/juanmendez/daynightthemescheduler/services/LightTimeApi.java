@@ -9,7 +9,7 @@ import info.juanmendez.daynightthemescheduler.models.Response;
  * contact@juanmendez.info
  */
 
-public interface LightTimeRetro {
+public interface LightTimeApi {
     void generateTodayTimeLight(Response<LightTime> respose);
     void generateTomorrowTimeLight(Response<LightTime> response );
 }

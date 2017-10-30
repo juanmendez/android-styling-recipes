@@ -1,20 +1,23 @@
 package info.juanmendez.daynightthemescheduler;
 
+import android.location.Location;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.reflect.Whitebox;
 
 import info.juanmendez.daynightthemescheduler.models.LightTime;
+import info.juanmendez.daynightthemescheduler.models.LightTimeModule;
 import info.juanmendez.daynightthemescheduler.models.Response;
-import info.juanmendez.daynightthemescheduler.services.ApiProxy;
-import info.juanmendez.daynightthemescheduler.services.LightTimeRetro;
+import info.juanmendez.daynightthemescheduler.services.LightTimeApi;
 import info.juanmendez.daynightthemescheduler.services.LightTimePlanner;
+import info.juanmendez.daynightthemescheduler.services.LocationService;
 import info.juanmendez.daynightthemescheduler.services.NetworkService;
+import info.juanmendez.daynightthemescheduler.services.ProxyLightTimeApi;
 import info.juanmendez.daynightthemescheduler.utils.LightTimeUtils;
 import info.juanmendez.daynightthemescheduler.utils.LocalTimeUtils;
 
@@ -26,26 +29,31 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.doAnswer;
 
 /**
- * These tests were made in order to make the functionality needed in ApiProxy
+ * These tests were made in order to make the functionality needed in ProxyLightTimeApi
  */
 public class LightTimePlannerTest {
 
     LocalTime sunrise;
     LocalTime sunset;
-    LightTimeRetro apiRetro;
+    LightTimeApi apiRetro;
     LightTime appLightTime;
     LightTime proxyTodayLightTime;
     LightTime proxyTomorrowLightTime;
     LightTimePlanner planner;
 
     boolean isOnline = true;
+    private boolean locationGranted = true;
     NetworkService networkService;
+    LocationService locationService;
+    LightTimeModule m;
 
     @Before
     public void before(){
@@ -58,31 +66,42 @@ public class LightTimePlannerTest {
 
         generateProxy();
         generateNetworkService();
+        generateLocationService();
 
-        planner = new LightTimePlanner( apiRetro, networkService, appLightTime );
+        m = LightTimeModule.create()
+                .applyLighTimeApi( apiRetro )
+                .applyLocationService(locationService)
+                .applyNetworkService(networkService);
+
+        planner = new LightTimePlanner( m, appLightTime );
     }
 
     private void generateNetworkService() {
         networkService = mock( NetworkService.class );
-
-        PowerMockito.doAnswer(invocation -> isOnline).when( networkService ).isOnline();
+        doAnswer(invocation -> isOnline).when( networkService ).isOnline();
     }
 
     private void generateProxy() {
         //chicago.. https://api.sunrise-sunset.org/json?lat=41.8500300&lng=-87.6500500&formatted=0
-        apiRetro = mock( LightTimeRetro.class );
+        apiRetro = mock( LightTimeApi.class );
 
-        PowerMockito.doAnswer(invocation -> {
+        doAnswer(invocation -> {
             Response<LightTime> response = invocation.getArgumentAt(0, Response.class);
             response.onResult(proxyTodayLightTime);
             return null;
         }).when(apiRetro).generateTodayTimeLight(any(Response.class));
 
-        PowerMockito.doAnswer(invocation -> {
+        doAnswer(invocation -> {
             Response<LightTime> response = invocation.getArgumentAt(0, Response.class);
             response.onResult(proxyTomorrowLightTime);
             return null;
         }).when(apiRetro).generateTomorrowTimeLight(any(Response.class));
+    }
+
+    private void generateLocationService(){
+        locationService = mock( LocationService.class );
+        doAnswer(invocation -> locationGranted).when( locationService ).isGranted();
+        doReturn( new Location("NONE")).when( locationService ).getLastKnownLocation();
     }
 
     @Test
@@ -205,7 +224,7 @@ public class LightTimePlannerTest {
         appLightTime.setSunrise( yesterdaySunrise );
         appLightTime.setSunset( yesterdaySunset );
 
-        ApiProxy proxy = new ApiProxy(networkService, apiRetro, appLightTime );
+        ProxyLightTimeApi proxy = new ProxyLightTimeApi( m, appLightTime );
         final LightTime[] proxyResult = new LightTime[1];
 
         Response<LightTime> response = result -> {
@@ -241,7 +260,8 @@ public class LightTimePlannerTest {
         appLightTime.setSunrise( yesterdaySunrise );
         appLightTime.setSunset( yesterdaySunset );
 
-        ApiProxy proxy = new ApiProxy(networkService, apiRetro, appLightTime );
+        ProxyLightTimeApi proxy = new ProxyLightTimeApi(m, appLightTime );
+
         final LightTime[] proxyResult = new LightTime[1];
 
         Response<LightTime> response = result -> {
@@ -286,5 +306,13 @@ public class LightTimePlannerTest {
 
         planner.provideNextTimeLight( response );
         assertFalse(LightTimeUtils.isValid( proxyResult[0]));
+
+        //if we have a network, but we don't have location permissions
+        isOnline = true;
+        locationGranted = false;
+
+        planner.provideNextTimeLight( response );
+        assertFalse(LightTimeUtils.isValid( proxyResult[0]));
+
     }
 }
