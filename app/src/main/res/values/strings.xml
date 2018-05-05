@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">Styling Recipes</string>
-    <string name="contraintlayout_group_description">The group can be a box, and apply dimensions. Each item member can attach just like it does with other layouts. Group can also be used to hide/display itself and its members</string>
-    <string name="contraintlayout_guideline_description">This example shows how a horizontal and vertical guidelines serve as attachments to both textviews, and line looking views</string>
+    <string name="barrier_description">barrier is similar to guideline. the big difference is linear has a fixed position, and barrier changes position based on location assigned. Position can be left/right, start/end, top/bottom from its referenced elements</string>
 </resources>
