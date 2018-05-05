@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Styling Recipes</string>
     <string name="contraintlayout_group_description">The group can be a box, and apply dimensions. Each item member can attach just like it does with other layouts. Group can also be used to hide/display itself and its members</string>
+    <string name="contraintlayout_guideline_description">Guidelines are like poles which are included in contraintLayouts but whose job is only to serve as a  vertical or horizontal reference. Any other elements can constraint to them. In this case two textvVews, and a skinny view, acting as a line, are constrained to the vertical guideline</string>
 </resources>
